@@ -6,8 +6,8 @@ from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from .config import settings
-from .models import Base, User
+from app.core.config import settings
+from app.model.base_model import Base, User
 
 
 parsed_db_url = urlparse(settings.DATABASE_URL)
