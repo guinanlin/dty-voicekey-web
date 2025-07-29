@@ -17,6 +17,7 @@ import { DeleteButton } from "./deleteButton";
 import { ReadItemResponse } from "@/app/openapi-client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { PrintButton } from "./printButton";
 
 export default async function DashboardPage() {
   const items = (await fetchItems()) as ReadItemResponse;
@@ -28,12 +29,13 @@ export default async function DashboardPage() {
         Here, you can see the overview of your items and manage them.
       </p>
 
-      <div className="mb-6">
+      <div className="mb-6 flex gap-4">
         <Link href="/dashboard/add-item">
           <Button variant="outline" className="text-lg px-4 py-2">
             Add New Item
           </Button>
         </Link>
+        <PrintButton />
       </div>
 
       <section className="p-6 bg-white rounded-lg shadow-lg mt-8">

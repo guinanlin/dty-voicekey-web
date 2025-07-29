@@ -14,11 +14,11 @@ fi
 
 if [ -f /.dockerenv ]; then
     echo "Running in Docker"
-    uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config=app/core/log_config.yml --reload &
+    uvicorn app.main:app --host 0.0.0.0 --port 9210 --log-config=app/core/log_config.yml --reload &
     python watcher.py
 else
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running locally with uv"
-    uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config=app/core/log_config.yml --reload &
+    uv run uvicorn app.main:app --host 0.0.0.0 --port 9210 --log-config=app/core/log_config.yml --reload &
     uv run python watcher.py
 fi
 

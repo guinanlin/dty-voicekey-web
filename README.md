@@ -70,11 +70,20 @@
 - [MailHog](https://github.com/mailhog/MailHog): 用于开发的电子邮件服务器
 - [Pre-commit hooks](https://pre-commit.com/): 使用自动检查来强制代码质量
 - [OpenAPI JSON schema](https://swagger.io/specification/): 集中的API文档和客户端生成
+- [PDFKit](https://pdfkit.org/): 用于生成PDF文档的Node.js库，支持中文字体和自定义内容
 
 通过这个设置，你将节省时间并保持后端和前端之间的无缝连接，提高生产力和可靠性。
 
 ## 生产就绪的身份验证和仪表板功能
 这个模板带有预配置的身份验证系统和简单的仪表板界面，允许你立即开始构建具有用户管理功能的应用。
+
+### PDF生成功能
+项目包含完整的PDF生成功能：
+- **PDFKit集成**: 使用PDFKit库生成高质量的PDF文档
+- **中文字体支持**: 支持NotoSansSC字体，完美显示中文内容
+- **API端点**: `/api/test-pdf` 提供PDF生成服务
+- **前端集成**: 仪表板中的打印按钮可直接生成和下载PDF文件
+- **自定义内容**: 支持添加文本、图片和格式化内容
 
 ## 使用此模板开始
 
@@ -162,6 +171,12 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
    pnpm install
    ```
 
+2. 安装PDF生成相关依赖：
+   ```bash
+   pnpm add pdfkit
+   pnpm add --save-dev @types/pdfkit
+   ```
+
 ### 构建项目（使用Docker）:
 
 1. 构建后端和前端容器：
@@ -196,6 +211,7 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 - **后端**: 在`http://localhost:8000`访问API。
 - **前端**: 在`http://localhost:3000`访问Web应用。
+- **PDF生成**: 访问`http://localhost:3000/api/test-pdf`直接下载PDF文件。
 
 ### 开发环境下的热重载
 项目在运行应用程序时包括两个热重载，一个用于后端，一个用于前端，当它们检测到更改时会自动重新启动本地服务器。这确保了应用程序始终是最新的，无需手动重新启动。
