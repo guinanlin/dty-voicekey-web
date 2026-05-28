@@ -1,9 +1,9 @@
 # Makefile
 
 # Variables
-BACKEND_DIR=fastapi_backend
-FRONTEND_DIR=nextjs-frontend
-DOCKER_COMPOSE=docker compose
+BACKEND_DIR=main_backend
+FRONTEND_DIR=main_frontend
+DOCKER_COMPOSE=docker compose -f docker/docker-compose.yml
 
 # Help
 .PHONY: help

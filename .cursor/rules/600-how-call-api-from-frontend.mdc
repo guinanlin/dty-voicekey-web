@@ -6,8 +6,8 @@ alwaysApply: false
 # 说明：
 
 这个文档说明是如何调用后端的服务
-后端的服务接口， 写在 [项目根目录]\nextjs-frontend\app\openapi-client\sdk.gen.ts 这个文件里头。 
-相关的type， 写在 [项目根目录]\nextjs-frontend\app\openapi-client\types.gen.ts这个文件里头
+后端的服务接口， 写在 [项目根目录]\main_frontend\app\openapi-client\sdk.gen.ts 这个文件里头。 
+相关的type， 写在 [项目根目录]\main_frontend\app\openapi-client\types.gen.ts这个文件里头
 
 # 你需要做的事情：
 

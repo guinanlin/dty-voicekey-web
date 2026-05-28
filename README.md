@@ -130,10 +130,10 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 ### 设置环境变量
 
-**后端（`fastapi_backend/.env`）:**
+**后端（`main_backend/.env`）:**
 将`.env.example`文件复制到`.env`并使用你自己的值更新变量。
    ```bash
-   cd fastapi_backend && cp .env.example .env
+   cd main_backend && cp .env.example .env
    ```
 1. 你只需要更新密钥。你可以使用以下命令生成一个新的密钥：
    ```bash
@@ -144,17 +144,17 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 4. OPENAPI_URL设置被注释掉。取消注释将隐藏/docs和openapi.json的URL，这对于生产是理想的。
 5. 你可以查看.env.example文件以获取有关变量的更多信息。
 
-**前端（`nextjs-frontend/.env.local`）:**
+**前端（`main_frontend/.env.local`）:**
 将`.env.example`文件复制到`.env`。这些值不太可能改变，所以你可以将它们保留为它们的值。
    ```bash
-   cd nextjs-frontend && cp .env.example .env
+   cd main_frontend && cp .env.example .env
    ```
 
 ### 运行数据库
 1. 使用Docker运行数据库以避免本地安装问题。构建并启动数据库容器：
    ```bash
-   docker compose build db
-   docker compose up -d db
+   docker compose -f docker/docker-compose.yml build db
+   docker compose -f docker/docker-compose.yml up -d db
    ```
 2. 运行以下命令应用数据库迁移：
    ```bash
@@ -166,13 +166,13 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 #### 后端
 
-1. 导航到`fastapi_backend`目录并运行：
+1. 导航到`main_backend`目录并运行：
    ```bash
    uv sync
    ```
 
 #### 前端
-1. 导航到`nextjs-frontend`目录并运行：
+1. 导航到`main_frontend`目录并运行：
    ```bash
    bun install
    ```
@@ -230,20 +230,20 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 1. 导出`openapi.json`模式：
    ```bash
-   cd fastapi_backend && uv run python -m commands.generate_openapi_schema
+   cd main_backend && uv run python -m commands.generate_openapi_schema
    ```
    或使用Docker：
    ```bash
-   docker compose run --rm --no-deps -T backend uv run python -m commands.generate_openapi_schema
+   docker compose -f docker/docker-compose.yml run --rm --no-deps -T backend uv run python -m commands.generate_openapi_schema
    ```
 
 2. 生成前端客户端：
    ```bash
-   cd nextjs-frontend && bun run generate-client
+   cd main_frontend && bun run generate-client
    ```
    或使用Docker：
    ```bash
-   docker compose run --rm --no-deps -T frontend bun run generate-client
+   docker compose -f docker/docker-compose.yml run --rm --no-deps -T frontend bun run generate-client
    ```
 
 ## 测试
@@ -267,7 +267,7 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 ## 预提交设置
 为了保持代码质量和一致性，项目包括两个单独的预提交配置文件：
 - `.pre-commit-config.yaml`用于在本地运行预提交检查。
-- `.pre-commit-config.docker.yaml`用于在Docker中运行预提交检查。
+- `docker/.pre-commit-config.docker.yaml`用于在Docker中运行预提交检查。
 
 ### 安装和激活预提交钩子
 要激活预提交钩子，对每个配置文件运行以下命令：
@@ -279,7 +279,7 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 - **对于Docker配置文件**:
   ```bash
-  pre-commit install -c .pre-commit-config.docker.yaml
+  pre-commit install -c docker/.pre-commit-config.docker.yaml
   ```
 
 ### 电子邮件本地主机设置
@@ -301,7 +301,7 @@ pre-commit run --all-files -c .pre-commit-config.yaml
 或
 
 ```bash
-pre-commit run --all-files -c .pre-commit-config.docker.yaml
+pre-commit run --all-files -c docker/.pre-commit-config.docker.yaml
 ```
 
 ### 更新预提交钩子

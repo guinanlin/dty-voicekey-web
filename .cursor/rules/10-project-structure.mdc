@@ -8,7 +8,7 @@ alwaysApply: false
 3. 项目结构
 nextjs-fastapi-template/                  # 项目根目录
 │
-├── fastapi_backend/                      # 后端代码目录
+├── main_backend/                      # 后端代码目录
 │   ├── alembic.ini                       # Alembic 配置文件，用于数据库迁移
 │   ├── alembic_migrations/               # 数据库迁移文件目录
 │   │   ├── versions/                     # 存放数据库迁移版本文件的目录
@@ -62,7 +62,7 @@ nextjs-fastapi-template/                  # 项目根目录
 │   ├── vercel.json                        # Vercel 配置文件
 │   └── vercel.prod.json                  # Vercel 生产环境配置文件
 │
-├── nextjs-frontend/                      # 前端代码目录
+├── main_frontend/                      # 前端代码目录
 │   ├── __tests__/                         # 测试目录，包含前端的单元测试
 │   │   ├── example.test.ts               # 示例测试文件
 │   │   └── ...                            # 其他测试文件
@@ -103,6 +103,10 @@ nextjs-fastapi-template/                  # 项目根目录
 │   ├── vercel.json                        # Vercel 配置文件，用于部署设置
 │   └── watcher.js                         # 文件监视器，用于热重载
 │
+├── docker/                               # Docker 编排与共享数据
+│   ├── docker-compose.yml
+│   ├── .pre-commit-config.docker.yaml
+│   └── shared-data/
 ├── README.md                             # 项目说明文件，包含使用说明和设置指南
 ├── Makefile                              # 构建和管理项目的 Makefile
 └── .gitignore                            # Git 忽略文件，列出不需要版本控制的文件

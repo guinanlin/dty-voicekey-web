@@ -6,11 +6,11 @@ alwaysApply: false
 # 编写测试服务层的标准操作程序（SOP）
 
 ## 项目目录结构
-- 服务文件通常位于 `fastapi_backend\app\service` 目录中，例如 `fastapi_backend/app/service/user_role_service.py`。
-- 测试文件应写入 `fastapi_backend\tests` 目录中，例如 `fastapi_backend/tests/service/test_user_role_service.py`，以保持测试代码与服务代码分离。
+- 服务文件通常位于 `main_backend\app\service` 目录中，例如 `main_backend/app/service/user_role_service.py`。
+- 测试文件应写入 `main_backend\tests` 目录中，例如 `main_backend/tests/service/test_user_role_service.py`，以保持测试代码与服务代码分离。
 
 ## 1. 创建测试py文件：
-测试文件应写入 `fastapi_backend\tests` 目录中，例如 `fastapi_backend/tests/service/test_user_role_service.py`，以保持测试代码与服务代码分离
+测试文件应写入 `main_backend\tests` 目录中，例如 `main_backend/tests/service/test_user_role_service.py`，以保持测试代码与服务代码分离
 
 ## 2. 导入必要的模块
 在测试文件的开头，导入所需的模块和类，例如 pytest、SQLAlchemy 和项目中的模型和服务：

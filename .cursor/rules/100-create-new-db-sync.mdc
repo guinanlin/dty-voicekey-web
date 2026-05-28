@@ -8,7 +8,7 @@ alwaysApply: false
 1. 首先必须运行如下命令获取当前的版本号。 
 
    ```
-   $ cd fastapi_backend; uv run alembic current
+   $ cd main_backend; uv run alembic current
    INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
    INFO  [alembic.runtime.migration] Will assume transactional DDL.
    e7f8g9h0i1j2k3l4m5 (head)
@@ -18,7 +18,7 @@ alwaysApply: false
    $
    ```
 
- 2. 构建alembic的数据库同步文件。写入的文件位置位于 fastapi_backend\alembic_migrations\versions 下面。写入的文件有如下的要求：
+ 2. 构建alembic的数据库同步文件。写入的文件位置位于 main_backend\alembic_migrations\versions 下面。写入的文件有如下的要求：
 
        1. 文件名例如： [402d067a8b92]_added_user_table.py 其中 [402d067a8b92] 是新的版本号，是12位的唯一码。
 
