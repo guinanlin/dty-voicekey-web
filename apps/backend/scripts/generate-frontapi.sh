@@ -1,14 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
 
-# 步骤 1: 进入后端项目目录并设置 PYTHONPATH
-cd main_backend
-source .venv/Scripts/activate
-python -m commands.generate_openapi_schema
+BACKEND_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+FRONTEND_DIR="$(cd "$BACKEND_DIR/../frontend" && pwd)"
 
-# 步骤 2: 进入前端项目目录
-cd ../main_frontend
+# 步骤 1: 进入后端项目目录并生成 OpenAPI
+cd "$BACKEND_DIR"
+uv run python -m commands.generate_openapi_schema
 
-# 步骤 3: 生成前端 API 客户端
+# 步骤 2: 进入前端项目目录并生成 API 客户端
+cd "$FRONTEND_DIR"
 bun run generate-client
 
-# 步骤 4: 通知用户检查使用
 echo "前端 API 客户端已生成，请检查使用。"

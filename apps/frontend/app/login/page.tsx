@@ -42,7 +42,7 @@ export default function Page() {
                 id="username"
                 name="username"
                 type="email"
-                placeholder="m@qq.com"
+                placeholder="admin@dty.com"
                 required
                 className="border-gray-300 dark:border-gray-600"
               />

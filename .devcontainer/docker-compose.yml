@@ -1,0 +1,133 @@
+name: dty-app-dev
+
+# 与 scripts/devcontainer-ensure-images.sh 保持一致；优先使用本机已有轻量镜像
+x-python-image: &python-image docker.m.daocloud.io/library/python:3.12-slim
+x-postgres-image: &postgres-image postgres:16-alpine
+x-bun-image: &bun-image oven/bun:1-alpine
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_IMAGE: docker.m.daocloud.io/library/python:3.12-slim
+    image: dty-app-devcontainer:latest
+    pull_policy: never
+    init: true
+    command: sleep infinity
+    working_dir: /workspaces/nextjs-fastapi-template
+    volumes:
+      - ..:/workspaces/nextjs-fastapi-template:cached
+    networks:
+      - dev
+
+  db:
+    image: *postgres-image
+    pull_policy: never
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    ports:
+      - "${POSTGRES_PORT:-5442}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mydatabase"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    networks:
+      - dev
+
+  db_test:
+    image: *postgres-image
+    pull_policy: never
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdatabase
+    ports:
+      - "${POSTGRES_TEST_PORT:-5443}:5432"
+    networks:
+      - dev
+
+  mailhog:
+    image: mailhog/mailhog
+    pull_policy: if_not_present
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - dev
+
+  backend:
+    image: dty-app-devcontainer:latest
+    pull_policy: never
+    working_dir: /workspaces/nextjs-fastapi-template/apps/backend
+    command: >
+      bash -lc "uv sync --frozen
+      && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config=app/core/log_config.yml --reload
+      & uv run python watcher.py; wait"
+    environment:
+      WATCHFILES_FORCE_POLLING: "1"
+      PYTHONUNBUFFERED: "1"
+      OPENAPI_OUTPUT_FILE: /workspaces/nextjs-fastapi-template/shared-data/openapi.json
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/mydatabase
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres:password@db_test:5432/testdatabase
+      MAIL_SERVER: mailhog
+      MAIL_PORT: "1025"
+      MAIL_USERNAME: test
+      MAIL_PASSWORD: test
+      MAIL_FROM: test@test.com
+      MAIL_STARTTLS: "False"
+      MAIL_SSL_TLS: "False"
+      USE_CREDENTIALS: "False"
+      FRONTEND_URL: http://localhost:${FRONTEND_PORT:-3010}
+      CORS_ORIGINS: '["*"]'
+      ACCESS_SECRET_KEY: dev-access-secret-change-in-production
+      RESET_PASSWORD_SECRET_KEY: dev-reset-secret-change-in-production
+      VERIFICATION_SECRET_KEY: dev-verification-secret-change-in-production
+    volumes:
+      - ..:/workspaces/nextjs-fastapi-template:cached
+      - backend-venv:/workspaces/nextjs-fastapi-template/apps/backend/.venv
+    ports:
+      - "${BACKEND_PORT:-8010}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dev
+
+  frontend:
+    image: *bun-image
+    pull_policy: never
+    working_dir: /workspaces/nextjs-fastapi-template/apps/frontend
+    command: >
+      sh -lc "bun install --frozen-lockfile
+      && bun --bun run dev & bun watcher.js; wait"
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      API_BASE_URL: http://backend:8000
+      OPENAPI_OUTPUT_FILE: /workspaces/nextjs-fastapi-template/shared-data/openapi.json
+    volumes:
+      - ..:/workspaces/nextjs-fastapi-template:cached
+      - frontend-node-modules:/workspaces/nextjs-fastapi-template/apps/frontend/node_modules
+    ports:
+      - "${FRONTEND_PORT:-3010}:3000"
+    depends_on:
+      - backend
+    networks:
+      - dev
+
+networks:
+  dev:
+
+volumes:
+  postgres_data:
+  backend-venv:
+  frontend-node-modules:

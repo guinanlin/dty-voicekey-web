@@ -8,7 +8,8 @@ alwaysApply: false
 3. 项目结构
 nextjs-fastapi-template/                  # 项目根目录
 │
-├── main_backend/                      # 后端代码目录
+├── apps/                         # 可部署应用目录（monorepo）
+│   ├── backend/                  # 后端代码目录（结构如下）
 │   ├── alembic.ini                       # Alembic 配置文件，用于数据库迁移
 │   ├── alembic_migrations/               # 数据库迁移文件目录
 │   │   ├── versions/                     # 存放数据库迁移版本文件的目录
@@ -60,10 +61,9 @@ nextjs-fastapi-template/                  # 项目根目录
 │   ├── start.sh                           # 启动脚本，用于启动应用
 │   ├── uv.lock                            # uv 依赖锁定文件
 │   ├── vercel.json                        # Vercel 配置文件
-│   └── vercel.prod.json                  # Vercel 生产环境配置文件
-│
-├── main_frontend/                      # 前端代码目录
-│   ├── __tests__/                         # 测试目录，包含前端的单元测试
+│   │   └── vercel.prod.json              # Vercel 生产环境配置文件
+│   └── frontend/                 # 前端代码目录
+│       ├── __tests__/                    # 测试目录，包含前端的单元测试
 │   │   ├── example.test.ts               # 示例测试文件
 │   │   └── ...                            # 其他测试文件
 │   ├── app/                               # 应用代码目录
@@ -103,10 +103,16 @@ nextjs-fastapi-template/                  # 项目根目录
 │   ├── vercel.json                        # Vercel 配置文件，用于部署设置
 │   └── watcher.js                         # 文件监视器，用于热重载
 │
-├── docker/                               # Docker 编排与共享数据
+├── packages/                             # 可复用库（阶段 1.5 骨架）
+│   ├── ts/tsconfig/                      # 共享 TypeScript 配置 (@dty/tsconfig)
+│   ├── py/common/                        # 共享 Python 包 (dty-common)
+│   └── contracts/openapi/                # API 契约占位
+├── docker/                               # Docker 编排配置
 │   ├── docker-compose.yml
-│   ├── .pre-commit-config.docker.yaml
-│   └── shared-data/
+│   └── .pre-commit-config.docker.yaml
+├── shared-data/                          # 前后端共享数据（如 openapi.json）
+├── pyproject.toml                        # uv workspace 根配置
+├── package.json                          # Bun workspace 根配置
 ├── README.md                             # 项目说明文件，包含使用说明和设置指南
 ├── Makefile                              # 构建和管理项目的 Makefile
 └── .gitignore                            # Git 忽略文件，列出不需要版本控制的文件

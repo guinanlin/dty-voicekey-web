@@ -11,7 +11,7 @@ alwaysApply: false
 
 1. **进入后端项目目录**：
    ```bash
-   cd main_backend
+   cd apps/backend
    ```
 
 2. **生成 OpenAPI 规范**：
@@ -22,7 +22,7 @@ alwaysApply: false
 
 3. **进入前端项目目录**：
    ```bash
-   cd main_frontend
+   cd apps/frontend
    ```
 
 4. **安装前端生成工具**：

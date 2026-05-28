@@ -1,9 +1,19 @@
 # Makefile
 
 # Variables
-BACKEND_DIR=main_backend
-FRONTEND_DIR=main_frontend
+BACKEND_DIR=apps/backend
+FRONTEND_DIR=apps/frontend
+ROOT_DIR=.
 DOCKER_COMPOSE=docker compose -f docker/docker-compose.yml
+DEVCONTAINER_ENV=.devcontainer/.env
+DEVCONTAINER_COMPOSE=docker compose --env-file $(DEVCONTAINER_ENV) -f .devcontainer/docker-compose.yml
+
+# Workspace
+.PHONY: sync-deps
+
+sync-deps: ## Install all workspace dependencies (uv + bun at repo root)
+	uv sync
+	cd $(ROOT_DIR) && bun install
 
 # Help
 .PHONY: help
@@ -72,3 +82,47 @@ docker-test-backend: ## Run tests for the backend
 
 docker-test-frontend: ## Run tests for the frontend
 	$(DOCKER_COMPOSE) run --rm frontend bun run test
+
+
+# Dev Container commands
+.PHONY: dc dcu dcd dcs dc-logs dc-sh dc-migrate dc-seed dc-deps dc-images dc-rebuild dc-env
+
+dc-env: ## Resolve free host ports into .devcontainer/.env
+	bash scripts/devcontainer-resolve-ports.sh
+
+dc-images: ## Ensure devcontainer base images exist locally
+	bash scripts/devcontainer-ensure-images.sh
+
+dc: dc-env ## One-click devcontainer up (build + postgres + mailhog + backend + frontend)
+	bash scripts/devcontainer-up.sh
+
+dcu: dc ## Alias for dc
+
+dcd: dc-env ## Stop and remove devcontainer containers/networks
+	$(DEVCONTAINER_COMPOSE) down
+
+dcs: dc-env ## Stop devcontainer without removing containers
+	$(DEVCONTAINER_COMPOSE) stop
+
+dc-rebuild: ## Rebuild devcontainer workspace image and restart stack
+	bash scripts/devcontainer-ensure-images.sh
+	$(DEVCONTAINER_COMPOSE) build --no-cache workspace
+	bash scripts/devcontainer-up.sh
+
+dc-logs: dc-env ## Follow devcontainer logs (optional: make dc-logs s=backend)
+	$(DEVCONTAINER_COMPOSE) logs -f $(s)
+
+dc-sh: dc-env ## Open a shell in the devcontainer workspace
+	$(DEVCONTAINER_COMPOSE) exec workspace bash
+
+dc-migrate: dc-env ## Run Alembic migrations in devcontainer backend
+	$(DEVCONTAINER_COMPOSE) exec backend uv run alembic upgrade head
+
+dc-seed: dc-env ## Create initial admin user (admin@dty.com / admin123)
+	$(DEVCONTAINER_COMPOSE) exec backend uv run python -m commands.seed_admin
+
+seed-admin: ## Create initial admin user locally (requires apps/backend/.env + running DB)
+	cd $(BACKEND_DIR) && uv run python -m commands.seed_admin
+
+dc-deps: ## Install workspace dependencies only (uv + bun)
+	$(DEVCONTAINER_COMPOSE) run --rm workspace bash .devcontainer/post-create.sh

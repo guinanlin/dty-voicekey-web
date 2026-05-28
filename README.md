@@ -130,10 +130,10 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 ### 设置环境变量
 
-**后端（`main_backend/.env`）:**
+**后端（`apps/backend/.env`）:**
 将`.env.example`文件复制到`.env`并使用你自己的值更新变量。
    ```bash
-   cd main_backend && cp .env.example .env
+   cd apps/backend && cp .env.example .env
    ```
 1. 你只需要更新密钥。你可以使用以下命令生成一个新的密钥：
    ```bash
@@ -144,10 +144,10 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 4. OPENAPI_URL设置被注释掉。取消注释将隐藏/docs和openapi.json的URL，这对于生产是理想的。
 5. 你可以查看.env.example文件以获取有关变量的更多信息。
 
-**前端（`main_frontend/.env.local`）:**
+**前端（`apps/frontend/.env.local`）:**
 将`.env.example`文件复制到`.env`。这些值不太可能改变，所以你可以将它们保留为它们的值。
    ```bash
-   cd main_frontend && cp .env.example .env
+   cd apps/frontend && cp .env.example .env
    ```
 
 ### 运行数据库
@@ -162,20 +162,21 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
    ```
 
 ### 构建项目（不使用Docker）:
-要在本地设置项目环境，使用以下命令：
+要在本地设置项目环境，在**仓库根目录**安装 workspace 依赖（推荐）：
+
+```bash
+make sync-deps
+```
+
+或分别执行：`uv sync`（Python）、`bun install`（TypeScript）。共享库见 [`packages/README.md`](packages/README.md)。
 
 #### 后端
 
-1. 导航到`main_backend`目录并运行：
-   ```bash
-   uv sync
-   ```
+后端依赖由根目录 `uv sync` 安装；开发命令仍在 `apps/backend` 下执行（如 `make start-backend`）。
 
 #### 前端
-1. 导航到`main_frontend`目录并运行：
-   ```bash
-   bun install
-   ```
+
+前端依赖由根目录 `bun install` 安装；开发命令仍在 `apps/frontend` 下执行（如 `make start-frontend`）。
 
 2. 安装PDF生成相关依赖：
    ```bash
@@ -230,7 +231,7 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 1. 导出`openapi.json`模式：
    ```bash
-   cd main_backend && uv run python -m commands.generate_openapi_schema
+   cd apps/backend && uv run python -m commands.generate_openapi_schema
    ```
    或使用Docker：
    ```bash
@@ -239,7 +240,7 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 2. 生成前端客户端：
    ```bash
-   cd main_frontend && bun run generate-client
+   cd apps/frontend && bun run generate-client
    ```
    或使用Docker：
    ```bash

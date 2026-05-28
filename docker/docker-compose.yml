@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ../main_backend
+      context: ../apps/backend
     environment:
       - OPENAPI_OUTPUT_FILE=./shared-data/openapi.json
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/mydatabase
@@ -12,9 +12,9 @@ services:
     networks:
       - my_network
     volumes:
-      - ../main_backend:/app
-      - main-backend-venv:/app/.venv
-      - ./shared-data:/app/shared-data
+      - ../apps/backend:/app
+      - backend-venv:/app/.venv
+      - ../shared-data:/app/shared-data
     depends_on:
       - db
   db:
@@ -42,7 +42,7 @@ services:
     restart: always
   frontend:
     build:
-      context: ../main_frontend
+      context: ../apps/frontend
     user: bun
     ports:
       - "3000:3000"
@@ -53,9 +53,9 @@ services:
       API_BASE_URL: http://backend:8000
       OPENAPI_OUTPUT_FILE: ./shared-data/openapi.json
     volumes:
-      - ../main_frontend:/app
-      - main-frontend-node-modules:/app/node_modules
-      - ./shared-data:/app/shared-data
+      - ../apps/frontend:/app
+      - frontend-node-modules:/app/node_modules
+      - ../shared-data:/app/shared-data
   mailhog:
     image: mailhog/mailhog
     ports:
@@ -66,8 +66,8 @@ services:
 
 volumes:
   postgres_data:
-  main-frontend-node-modules:
-  main-backend-venv:
+  frontend-node-modules:
+  backend-venv:
 
 networks:
   my_network:

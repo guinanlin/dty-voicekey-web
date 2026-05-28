@@ -41,7 +41,7 @@ repos:
         entry: sh -c 'docker compose -f docker/docker-compose.yml run --rm --no-deps -T frontend bun run generate-client'
         language: system
         # Only run frontend client generation if frontend files have changed:
-        files: ^docker/shared-data/openapi\.json$
+        files: ^shared-data/openapi\.json$
         pass_filenames: false
         # export requirements is required to vercel deploy
       - id: export-requirements

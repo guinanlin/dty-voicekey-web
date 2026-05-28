@@ -8,8 +8,8 @@ alwaysApply: false
 执行的关键步骤和注意事项：
 1. 一般都会提供相关的UML的类图，请读取UML class类图的内容， 读取出所需要实现的方法。 
 2. 具体的实现方法参照如下的步骤。
-3. 需要实现的服务的路径为： main_backend\app\service
-4. 若需要涉及schema的定义，路径为：main_backend\app\schema
+3. 需要实现的服务的路径为： apps\backend\app\service
+4. 若需要涉及schema的定义，路径为：apps\backend\app\schema
   
 
 ## 1. 导入必要的模块

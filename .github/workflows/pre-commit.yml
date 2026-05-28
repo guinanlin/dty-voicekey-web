@@ -32,7 +32,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install the project
-        working-directory: ./main_backend
+        working-directory: ./apps/backend
         run: uv sync --all-extras --dev
 
       - name: Setup Bun
@@ -41,7 +41,7 @@ jobs:
           bun-version: latest
 
       - name: Install Node dependencies
-        working-directory: ./main_frontend
+        working-directory: ./apps/frontend
         run: bun install --frozen-lockfile
 
       - name: Run pre-commit
