@@ -4,125 +4,103 @@
 BACKEND_DIR=apps/backend
 FRONTEND_DIR=apps/frontend
 ROOT_DIR=.
-DOCKER_COMPOSE=docker compose -f docker/docker-compose.yml
 DEVCONTAINER_ENV=.devcontainer/.env
 DEVCONTAINER_COMPOSE=docker compose --env-file $(DEVCONTAINER_ENV) -f .devcontainer/docker-compose.yml
+
+# Help (default when running bare `make`)
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help:
+	@echo ""
+	@echo "Usage: make <target>"
+	@echo ""
+	@echo "Dependencies"
+	@echo "  sync-deps     Install uv + bun dependencies (repo root)"
+	@echo ""
+	@echo "Local dev"
+	@echo "  start-backend   Start FastAPI with hot reload  (:8000)"
+	@echo "  start-frontend  Start Next.js with hot reload (:3000)"
+	@echo "  test-backend    Run backend tests (pytest)"
+	@echo "  test-frontend   Run frontend tests (jest)"
+	@echo "  seed-admin      Create admin user locally"
+	@echo ""
+	@echo "Dev Container"
+	@echo "  dc / dcu        Start full stack (DB + MailHog + backend + frontend)"
+	@echo "  dcd             Stop and remove containers"
+	@echo "  dcs             Stop containers (keep volumes)"
+	@echo "  dc-sh           Open workspace shell"
+	@echo "  dc-logs         Follow logs (e.g. make dc-logs s=backend)"
+	@echo "  dc-migrate      Run Alembic migrations"
+	@echo "  dc-seed         Seed admin user (admin@dty.com / admin123)"
+	@echo "  dc-rebuild      Rebuild workspace image and restart"
+	@echo "  dc-deps         Install uv + bun inside container"
+	@echo ""
 
 # Workspace
 .PHONY: sync-deps
 
-sync-deps: ## Install all workspace dependencies (uv + bun at repo root)
+sync-deps:
 	uv sync
 	cd $(ROOT_DIR) && bun install
 
-# Help
-.PHONY: help
-help:
-	@echo "Available commands:"
-	@awk '/^[a-zA-Z_-]+:/{split($$1, target, ":"); print "  " target[1] "\t" substr($$0, index($$0,$$2))}' $(MAKEFILE_LIST)
+# Backend
+.PHONY: start-backend test-backend seed-admin
 
-# Backend commands
-.PHONY: start-backend test-backend
-
-start-backend: ## Start the backend server with FastAPI and hot reload
+start-backend:
 	cd $(BACKEND_DIR) && ./start.sh
 
-test-backend: ## Run backend tests using pytest
+test-backend:
 	cd $(BACKEND_DIR) && uv run pytest
 
+seed-admin:
+	cd $(BACKEND_DIR) && uv run python -m commands.seed_admin
 
-# Frontend commands
+# Frontend
 .PHONY: start-frontend test-frontend
 
-start-frontend: ## Start the frontend server with Bun and hot reload
+start-frontend:
 	cd $(FRONTEND_DIR) && ./start.sh
 
-test-frontend: ## Run frontend tests using bun
+test-frontend:
 	cd $(FRONTEND_DIR) && bun run test
 
+# Dev Container
+.PHONY: dc dcu dcd dcs dc-logs dc-sh dc-migrate dc-seed dc-deps dc-rebuild dc-env dc-images
 
-# Docker commands
-.PHONY: docker-backend-shell docker-frontend-shell docker-build docker-build-backend \
-        docker-build-frontend docker-start-backend docker-start-frontend docker-up-test-db \
-        docker-migrate-db docker-db-schema docker-test-backend docker-test-frontend
-
-
-docker-backend-shell: ## Access the backend container shell
-	$(DOCKER_COMPOSE) run --rm backend sh
-
-docker-frontend-shell: ## Access the frontend container shell
-	$(DOCKER_COMPOSE) run --rm frontend sh
-
-docker-build: ## Build all the services
-	$(DOCKER_COMPOSE) build --no-cache
-
-docker-build-backend: ## Build the backend container with no cache
-	$(DOCKER_COMPOSE) build backend --no-cache
-
-docker-build-frontend: ## Build the frontend container with no cache
-	$(DOCKER_COMPOSE) build frontend --no-cache
-
-docker-start-backend: ## Start the backend container
-	$(DOCKER_COMPOSE) up backend
-
-docker-start-frontend: ## Start the frontend container
-	$(DOCKER_COMPOSE) up frontend
-
-docker-up-test-db: ## Start the test database container
-	$(DOCKER_COMPOSE) up db_test
-
-docker-migrate-db: ## Run database migrations using Alembic
-	$(DOCKER_COMPOSE) run --rm backend alembic upgrade head
-
-docker-db-schema: ## Generate a new migration schema. Usage: make docker-db-schema migration_name="add users"
-	$(DOCKER_COMPOSE) run --rm backend alembic revision --autogenerate -m "$(migration_name)"
-
-docker-test-backend: ## Run tests for the backend
-	$(DOCKER_COMPOSE) run --rm backend pytest
-
-docker-test-frontend: ## Run tests for the frontend
-	$(DOCKER_COMPOSE) run --rm frontend bun run test
-
-
-# Dev Container commands
-.PHONY: dc dcu dcd dcs dc-logs dc-sh dc-migrate dc-seed dc-deps dc-images dc-rebuild dc-env
-
-dc-env: ## Resolve free host ports into .devcontainer/.env
+dc-env:
 	bash scripts/devcontainer-resolve-ports.sh
 
-dc-images: ## Ensure devcontainer base images exist locally
+dc-images:
 	bash scripts/devcontainer-ensure-images.sh
 
-dc: dc-env ## One-click devcontainer up (build + postgres + mailhog + backend + frontend)
+dc: dc-env
 	bash scripts/devcontainer-up.sh
 
-dcu: dc ## Alias for dc
+dcu: dc
 
-dcd: dc-env ## Stop and remove devcontainer containers/networks
+dcd: dc-env
 	$(DEVCONTAINER_COMPOSE) down
 
-dcs: dc-env ## Stop devcontainer without removing containers
+dcs: dc-env
 	$(DEVCONTAINER_COMPOSE) stop
 
-dc-rebuild: ## Rebuild devcontainer workspace image and restart stack
+dc-rebuild:
 	bash scripts/devcontainer-ensure-images.sh
 	$(DEVCONTAINER_COMPOSE) build --no-cache workspace
 	bash scripts/devcontainer-up.sh
 
-dc-logs: dc-env ## Follow devcontainer logs (optional: make dc-logs s=backend)
+dc-logs: dc-env
 	$(DEVCONTAINER_COMPOSE) logs -f $(s)
 
-dc-sh: dc-env ## Open a shell in the devcontainer workspace
+dc-sh: dc-env
 	$(DEVCONTAINER_COMPOSE) exec workspace bash
 
-dc-migrate: dc-env ## Run Alembic migrations in devcontainer backend
+dc-migrate: dc-env
 	$(DEVCONTAINER_COMPOSE) exec backend uv run alembic upgrade head
 
-dc-seed: dc-env ## Create initial admin user (admin@dty.com / admin123)
+dc-seed: dc-env
 	$(DEVCONTAINER_COMPOSE) exec backend uv run python -m commands.seed_admin
 
-seed-admin: ## Create initial admin user locally (requires apps/backend/.env + running DB)
-	cd $(BACKEND_DIR) && uv run python -m commands.seed_admin
-
-dc-deps: ## Install workspace dependencies only (uv + bun)
+dc-deps:
 	$(DEVCONTAINER_COMPOSE) run --rm workspace bash .devcontainer/post-create.sh
