@@ -33,19 +33,9 @@ export async function GET() {
       });
 
       try {
-        // 尝试加载中文字体
-        const fontPath = path.join(process.cwd(), 'public', 'fonts', 'NotoSansSC-Light.ttf');
-        const boldFontPath = path.join(process.cwd(), 'public', 'fonts', 'NotoSansSC-Bold.ttf');
-        console.log('字体路径:', fontPath);
-        console.log('字体文件存在:', fs.existsSync(fontPath));
-        console.log('粗体字体路径:', boldFontPath);
-        console.log('粗体字体文件存在:', fs.existsSync(boldFontPath));
-        
+        const fontPath = path.join(process.cwd(), 'public', 'fonts', 'NotoSansSC-Bold.ttf');
         if (fs.existsSync(fontPath)) {
           doc.font(fontPath);
-          console.log('使用Noto Sans SC字体');
-        } else {
-          console.log('使用默认字体');
         }
 
         // 设置字体大小
