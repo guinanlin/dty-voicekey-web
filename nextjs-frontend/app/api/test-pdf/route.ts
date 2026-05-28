@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import PDFDocument from 'pdfkit';
-import path from 'path';
-import fs from 'fs';
 
 export async function GET() {
   try {
@@ -33,11 +31,6 @@ export async function GET() {
       });
 
       try {
-        const fontPath = path.join(process.cwd(), 'public', 'fonts', 'NotoSansSC-Bold.ttf');
-        if (fs.existsSync(fontPath)) {
-          doc.font(fontPath);
-        }
-
         // 设置字体大小
         doc.fontSize(24);
         
