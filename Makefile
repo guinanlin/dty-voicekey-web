@@ -24,11 +24,11 @@ test-backend: ## Run backend tests using pytest
 # Frontend commands
 .PHONY: start-frontend test-frontend
 
-start-frontend: ## Start the frontend server with pnpm and hot reload
+start-frontend: ## Start the frontend server with Bun and hot reload
 	cd $(FRONTEND_DIR) && ./start.sh
 
-test-frontend: ## Run frontend tests using npm
-	cd $(FRONTEND_DIR) && pnpm run test
+test-frontend: ## Run frontend tests using bun
+	cd $(FRONTEND_DIR) && bun run test
 
 
 # Docker commands
@@ -71,4 +71,4 @@ docker-test-backend: ## Run tests for the backend
 	$(DOCKER_COMPOSE) run --rm backend pytest
 
 docker-test-frontend: ## Run tests for the frontend
-	$(DOCKER_COMPOSE) run --rm frontend pnpm run test
+	$(DOCKER_COMPOSE) run --rm frontend bun run test

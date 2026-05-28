@@ -10,7 +10,7 @@
 * [设置](#设置)
   * [安装所需工具](#安装所需工具)
     * [1. uv](#1-uv)
-    * [2. Node.js, npm 和 pnpm](#2-nodejsm-npm-and-pnpm)
+    * [2. Bun](#2-bun)
     * [3. Docker](#3-docker)
     * [4. Docker Compose](#4-docker-compose)
   * [设置环境变量](#设置环境变量)
@@ -105,11 +105,17 @@
 #### 1. uv
 uv 用于管理后端的Python依赖。按照[官方安装指南](https://docs.astral.sh/uv/getting-started/installation/)安装 uv。
 
-#### 2. Node.jsm, npm 和 pnpm
-确保已经安装了Node.js和npm以运行前端。按照[Node.js安装指南](https://nodejs.org/en/download/)进行安装。
-安装完成后，运行以下命令安装pnpm：
+#### 2. Bun
+前端使用 Bun 作为包管理器和运行时。按照[官方安装指南](https://bun.sh/docs/installation)安装 Bun：
+
 ```bash
-npm install -g pnpm
+curl -fsSL https://bun.sh/install | bash
+```
+
+安装完成后，运行以下命令验证：
+
+```bash
+bun --version
 ```
 
 #### 3. Docker
@@ -168,13 +174,13 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 #### 前端
 1. 导航到`nextjs-frontend`目录并运行：
    ```bash
-   pnpm install
+   bun install
    ```
 
 2. 安装PDF生成相关依赖：
    ```bash
-   pnpm add pdfkit
-   pnpm add --save-dev @types/pdfkit
+   bun add pdfkit
+   bun add --dev @types/pdfkit
    ```
 
 ### 构建项目（使用Docker）:
@@ -233,11 +239,11 @@ Docker是在容器化环境中运行项目所需的。按照适当的安装指�
 
 2. 生成前端客户端：
    ```bash
-   cd nextjs-frontend && npm run generate-client
+   cd nextjs-frontend && bun run generate-client
    ```
    或使用Docker：
    ```bash
-   docker compose run --rm --no-deps -T frontend npm run generate-client
+   docker compose run --rm --no-deps -T frontend bun run generate-client
    ```
 
 ## 测试

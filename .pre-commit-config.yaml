@@ -31,21 +31,21 @@ repos:
     hooks:
       - id: frontend-lint
         name: run frontend lint
-        entry: sh -c 'cd nextjs-frontend && npm run lint'
+        entry: sh -c 'cd nextjs-frontend && bun run lint'
         language: system
         types: [ file ]
         files: ^nextjs-frontend/.*\.(js|jsx|ts|tsx)$
         pass_filenames: true
       - id: frontend-prettier
         name: Run Prettier on frontend files
-        entry: sh -c 'cd nextjs-frontend && pnpm run prettier'
+        entry: sh -c 'cd nextjs-frontend && bun run prettier'
         language: system
         types: [ file ]
         files: ^nextjs-frontend/.*\.(js|jsx|ts|tsx)$
         pass_filenames: true
       - id: frontend-tsc
         name: run frontend tsc
-        entry: sh -c 'cd nextjs-frontend && pnpm run tsc'
+        entry: sh -c 'cd nextjs-frontend && bun run tsc'
         language: system
         types: [ file ]
         files: ^nextjs-frontend/.*\.(ts|tsx)$
@@ -59,7 +59,7 @@ repos:
         pass_filenames: false
       - id: generate-frontend-client
         name: generate frontend client
-        entry: sh -c 'cd nextjs-frontend && pnpm run generate-client'
+        entry: sh -c 'cd nextjs-frontend && bun run generate-client'
         language: system
         # Only run frontend client generation if frontend files have changed:
         files: openapi\.json$

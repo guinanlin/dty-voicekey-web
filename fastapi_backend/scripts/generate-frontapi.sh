@@ -8,7 +8,7 @@ python -m commands.generate_openapi_schema
 cd ../nextjs-frontend
 
 # 步骤 3: 生成前端 API 客户端
-pnpm run generate-client
+bun run generate-client
 
 # 步骤 4: 通知用户检查使用
 echo "前端 API 客户端已生成，请检查使用。"

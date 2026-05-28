@@ -3,7 +3,7 @@ description: 项目信息
 globs: 
 alwaysApply: false
 ---
-1. 项目前端 next.js, react, tailwindcss . 构建工具是pnpm
+1. 项目前端 next.js, react, tailwindcss . 构建工具是 Bun
 2. 项目后端 python,fastapi. 构建工具是uv
 3. 项目结构
 nextjs-fastapi-template/                  # 项目根目录
@@ -90,7 +90,7 @@ nextjs-fastapi-template/                  # 项目根目录
 │   ├── openapi.json                       # OpenAPI 规范文件
 │   ├── openapi-ts.config.ts               # OpenAPI TypeScript 配置文件
 │   ├── package.json                       # 项目依赖和脚本配置文件
-│   ├── pnpm-lock.yaml                     # pnpm 依赖锁定文件
+│   ├── bun.lock                           # Bun 依赖锁定文件
 │   ├── postcss.config.js                  # PostCSS 配置文件，用于样式处理
 │   ├── public/                            # 公共资源目录，存放静态文件
 │   │   ├── images/                        # 图片资源目录

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-pnpm run dev &
+bun --bun run dev &
 
-node watcher.js
+bun watcher.js
 
 wait

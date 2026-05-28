@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # 如何生成前端调用函数
 
-请严格执行这些步骤，我使用的前端构建巩固是pnpm， command是bash
+请严格执行这些步骤，我使用的前端构建工具是 Bun， command是bash
 
 ## 步骤
 
@@ -27,13 +27,13 @@ alwaysApply: false
 
 4. **安装前端生成工具**：
    ```bash
-   pnpm add @hey-api/openapi-ts
+   bun add @hey-api/openapi-ts
    ```
 
 5. **生成前端 API 客户端**：
    执行以下命令：
    ```bash
-   pnpm run generate-client
+   bun run generate-client
    ```
 
 6. **通知用户检查使用**

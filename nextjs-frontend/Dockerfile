@@ -1,31 +1,17 @@
-FROM node:20-bookworm
+FROM oven/bun:1.2-debian
 
-# Set the working directory
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
-# Copy package files and install dependencies
-COPY package*.json ./
-
-# Install dependencies as root (or myappuser, depending on your structure)
-RUN pnpm install
-# RUN chown -R node:node /app
-
-# Copy the rest of your application code
 COPY . .
+RUN bun --bun run build
 
-# # Build the application
-RUN pnpm run build
-
-# Ensure script has execution permissions
 RUN chmod +x ./start.prod.sh
 
-## Switch to the non-root user
-USER node
+USER bun
 
 EXPOSE 3000
 
-# Start the application update
-CMD ["sh", "-c", "pnpm run start & node watcher.js & wait"]
+CMD ["sh", "-c", "bun --bun run start & bun watcher.js & wait"]

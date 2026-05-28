@@ -67,7 +67,7 @@ export async function GET() {
     headers.set('Content-Disposition', 'attachment; filename=hello.pdf');
     headers.set('Content-Length', pdfBuffer.length.toString());
 
-    return new NextResponse(pdfBuffer, { headers });
+    return new NextResponse(new Uint8Array(pdfBuffer), { headers });
   } catch (error) {
     console.error('PDF 生成失败:', error);
     return NextResponse.json({ 

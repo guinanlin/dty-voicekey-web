@@ -69,24 +69,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 9
-          run_install: false
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+          bun-version: latest
 
       - name: Install Node dependencies
         working-directory: ./nextjs-frontend
-        run: pnpm install
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck frontend
+        working-directory: ./nextjs-frontend
+        run: bun run tsc
+
+      - name: Lint frontend
+        working-directory: ./nextjs-frontend
+        run: bun run lint
+
+      - name: Build frontend
+        working-directory: ./nextjs-frontend
+        run: bun run build
 
       - name: Run tests
         working-directory: ./nextjs-frontend
-        run: pnpm run coverage
+        run: bun run coverage
 
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.3.4
