@@ -4,11 +4,16 @@ set -euo pipefail
 ROOT="/workspaces/nextjs-fastapi-template"
 cd "$ROOT"
 
-mkdir -p shared-data apps/backend/logs
+mkdir -p shared-data apps/backend/logs apps/backend_oss_gateway/logs apps/backend_oss_gateway/storage
 
 if [[ ! -f apps/backend/.env ]]; then
   cp apps/backend/.env.example apps/backend/.env
   echo ">>> 已创建 apps/backend/.env（来自 .env.example）"
+fi
+
+if [[ ! -f apps/backend_oss_gateway/.env ]]; then
+  cp apps/backend_oss_gateway/.env.example apps/backend_oss_gateway/.env
+  echo ">>> 已创建 apps/backend_oss_gateway/.env（来自 .env.example）"
 fi
 
 if [[ ! -f apps/frontend/.env.local ]]; then

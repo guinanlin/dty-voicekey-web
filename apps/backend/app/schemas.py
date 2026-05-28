@@ -32,3 +32,18 @@ class ItemRead(ItemBase):
     user_id: UUID
 
     model_config = {"from_attributes": True}
+
+
+class FileUploadResponse(BaseModel):
+    file_id: str
+    filename: str
+    size: int
+    mime_type: str
+    status: str
+    download_url: str
+
+
+class FileDownloadResponse(BaseModel):
+    file_id: str
+    download_url: str
+    expires_in: int

@@ -22,10 +22,29 @@ export type Body_auth_verify_verify = {
     token: string;
 };
 
+export type Body_files_upload_file = {
+    file: (Blob | File);
+};
+
 export type ErrorModel = {
     detail: (string | {
     [key: string]: (string);
 });
+};
+
+export type FileDownloadResponse = {
+    file_id: string;
+    download_url: string;
+    expires_in: number;
+};
+
+export type FileUploadResponse = {
+    file_id: string;
+    filename: string;
+    size: number;
+    mime_type: string;
+    status: string;
+    download_url: string;
 };
 
 export type HTTPValidationError = {
@@ -201,3 +220,21 @@ export type DeleteItemData = {
 export type DeleteItemResponse = (unknown);
 
 export type DeleteItemError = (HTTPValidationError);
+
+export type UploadFileData = {
+    body: Body_files_upload_file;
+};
+
+export type UploadFileResponse = (FileUploadResponse);
+
+export type UploadFileError = (HTTPValidationError);
+
+export type GetFileDownloadUrlData = {
+    path: {
+        file_id: string;
+    };
+};
+
+export type GetFileDownloadUrlResponse = (FileDownloadResponse);
+
+export type GetFileDownloadUrlError = (HTTPValidationError);

@@ -57,6 +57,12 @@ cover/
 
 # Django stuff:
 *.log
+apps/backend/logs/*
+!apps/backend/logs/.gitkeep
+apps/backend_oss_gateway/logs/*
+!apps/backend_oss_gateway/logs/.gitkeep
+apps/backend_oss_gateway/storage/*
+!apps/backend_oss_gateway/storage/.gitkeep
 local_settings.py
 db.sqlite3
 db.sqlite3-journal

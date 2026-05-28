@@ -17,6 +17,7 @@
 nextjs-fastapi-template/
 ├── apps/
 │   ├── backend/          # FastAPI 应用
+│   ├── backend_oss_gateway/  # OSS 存储网关（oss_* 表归属此服务）
 │   └── frontend/         # Next.js 应用
 ├── packages/             # 共享库（ts / py / contracts）
 ├── shared-data/          # 运行时共享产物（如 openapi.json）
@@ -164,6 +165,7 @@ make dcd         # 停止并清理
 |------|----------|
 | Next.js | 3010 |
 | FastAPI | 8010 |
+| OSS Gateway | 8020 |
 | Postgres（主库） | 5442 |
 | Postgres（测试库） | 5443 |
 | MailHog UI | 8025 |
@@ -232,9 +234,14 @@ make test-backend      # pytest
 make test-frontend     # jest
 make docker-migrate-db # Docker 内迁移
 make dc                # Dev Container 全栈
+make dc-migrate-oss    # OSS Gateway 迁移
 ```
 
 完整列表以 `Makefile` 为准。
+
+## OSS Gateway
+
+主 `backend` 通过 `app/integrations/storage_gateway_client.py` 调用网关，禁止直写 `oss_*` 表或直接 import 云厂商 SDK。详见 [apps/backend_oss_gateway/README.md](../../apps/backend_oss_gateway/README.md)。
 
 ## 常见问题
 

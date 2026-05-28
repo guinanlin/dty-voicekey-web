@@ -10,4 +10,4 @@ readme = "README.md"
 package = false
 
 [tool.uv.workspace]
-members = ["apps/backend", "packages/py/*"]
+members = ["apps/backend", "apps/backend_oss_gateway", "packages/py/*"]

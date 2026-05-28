@@ -1,313 +1,211 @@
 [![CI](https://github.com/vintasoftware/nextjs-fastapi-template/actions/workflows/ci.yml/badge.svg)](https://github.com/vintasoftware/nextjs-fastapi-template/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/vintasoftware/nextjs-fastapi-template/badge.svg)](https://coveralls.io/github/vintasoftware/nextjs-fastapi-template)
 
 # nextjs-fastapi-template
 
-## 目录
-* [关于](#关于)
-* [生产就绪的身份验证和仪表板](#生产就绪的身份验证和仪表板)
-* [使用此模板开始](#使用此模板开始)
-* [设置](#设置)
-  * [安装所需工具](#安装所需工具)
-    * [1. uv](#1-uv)
-    * [2. Bun](#2-bun)
-    * [3. Docker](#3-docker)
-    * [4. Docker Compose](#4-docker-compose)
-  * [设置环境变量](#设置环境变量)
-  * [运行数据库](#运行数据库)
-  * [构建项目（不使用Docker）](#构建项目（不使用Docker）)
-    * [后端](#后端)
-    * [前端](#前端)
-  * [构建项目（使用Docker）](#构建项目（使用Docker）)
-    * [后端](#后端)
-    * [前端](#前端)
-* [运行应用程序](#运行应用程序)
-* [开发环境下的热重载](#开发环境下的热重载)
-  * [手动执行热重载命令](#手动执行热重载命令)
-* [测试](#测试)
-* [电子邮件本地主机设置](#电子邮件本地主机设置)
-* [预提交设置](#预提交设置)
-  * [安装和激活预提交钩子](#安装和激活预提交钩子)
-  * [运行预提交检查](#运行预提交检查)
-  * [更新预提交钩子](#更新预提交钩子)
-* [Alembic数据库迁移](#Alembic数据库迁移)
-* [GitHub Actions](#GitHub Actions)
-  * [Secrets Configuration](#Secrets Configuration)
-* [生产部署](#生产部署)
-* [为生产部署设置CI（GitHub Actions）](#为生产部署设置CI（GitHub Actions）)
-* [部署后配置](#部署后配置)
-* [Makefile](#Makefile)
-* [重要考虑因素](#重要考虑因素)
-* [贡献](#贡献)
-* [分享你的项目！](#分享你的项目！)
-* [商业支持](#商业支持)
+基于 **Monorepo** 的全栈模板：FastAPI 后端 + Next.js 前端 + **OSS Gateway 对象存储网关**，OpenAPI 驱动类型安全客户端，内置认证与基础仪表板。
 
-## 关于
-这个模板简化了使用 [FastAPI](https://fastapi.tiangolo.com/) 构建API和使用 [Next.js](https://nextjs.org/) 构建动态前端的过程。它使用 [@hey-api/openapi-ts](https://github.com/hey-ai/openapi-ts) 来生成类型安全的客户端，自动监视OpenAPI模式和客户端的更新，确保开发工作流的顺畅和同步。
+| 层级 | 技术 | 工具 |
+|------|------|------|
+| 前端 | Next.js、React、Tailwind、shadcn/ui | Bun |
+| 后端 | FastAPI、SQLAlchemy、Pydantic、fastapi-users | uv |
+| 存储网关 | FastAPI、Provider 插件（Local / S3 / 阿里云 OSS） | uv |
+| 数据 | PostgreSQL（`oss_*` 表由网关维护） | Docker |
+| 契约 | OpenAPI → `@hey-api/openapi-ts` | 热重载 watcher |
 
-- [Next.js](https://nextjs.org/): 快速、SEO友好的前端框架
-- [FastAPI](https://fastapi.tiangolo.com/): 高性能的Python后端
-- [SQLAlchemy](https://www.sqlalchemy.org/): 强大的Python SQL工具包和ORM
-- [PostgreSQL](https://www.postgresql.org/): 先进的开源关系数据库
-- [Pydantic](https://docs.pydantic.dev/): 使用Python类型注释进行数据验证和设置管理
-- [Zod](https://zod.dev/) + [TypeScript](https://www.typescriptlang.org/): 端到端类型安全和模式验证
-- [fastapi-users](https://fastapi-users.github.io/fastapi-users/): 包含以下功能的完整身份验证系统：
-  - 默认情况下进行安全密码哈希处理
-  - JWT（JSON Web Token）身份验证
-  - 基于电子邮件的密码恢复
-- [Shadcn/ui](https://ui.shadcn.com/): 可定制的React组件
-- [OpenAPI-fetch](https://github.com/Hey-AI/openapi-fetch): 从OpenAPI模式生成完全类型化的客户端
-- [fastapi-mail](https://sabuhish.github.io/fastapi-mail/): 用于FastAPI应用的高效电子邮件处理
-- [uv](https://docs.astral.sh/uv/): 一个极快的Python包和项目管理器
-- [Pytest](https://docs.pytest.org/): 强大的Python测试框架
-- 代码质量工具：
-  - [Ruff](https://github.com/astral-sh/ruff): 快速的Python代码检查
-  - [ESLint](https://eslint.org/): JavaScript/TypeScript代码质量
-- 热重载监视器：
-  - 后端：[Watchdog](https://github.com/gorakhargosh/watchdog) 用于监视文件更改
-  - 前端：[Chokidar](https://github.com/paulmillr/chokidar) 用于实时更新
-- [Docker](https://www.docker.com/) 和 [Docker Compose](https://docs.docker.com/compose/): 用于开发和生产的一致环境
-- [MailHog](https://github.com/mailhog/MailHog): 用于开发的电子邮件服务器
-- [Pre-commit hooks](https://pre-commit.com/): 使用自动检查来强制代码质量
-- [OpenAPI JSON schema](https://swagger.io/specification/): 集中的API文档和客户端生成
-- [PDFKit](https://pdfkit.org/): 用于生成PDF文档的Node.js库，支持中文字体和自定义内容
+## 项目结构
 
-通过这个设置，你将节省时间并保持后端和前端之间的无缝连接，提高生产力和可靠性。
-
-## 生产就绪的身份验证和仪表板功能
-这个模板带有预配置的身份验证系统和简单的仪表板界面，允许你立即开始构建具有用户管理功能的应用。
-
-### PDF生成功能
-项目包含完整的PDF生成功能：
-- **PDFKit集成**: 使用PDFKit库生成高质量的PDF文档
-- **中文字体支持**: 支持NotoSansSC字体，完美显示中文内容
-- **API端点**: `/api/test-pdf` 提供PDF生成服务
-- **前端集成**: 仪表板中的打印按钮可直接生成和下载PDF文件
-- **自定义内容**: 支持添加文本、图片和格式化内容
-
-## 使用此模板开始
-
-要为你自己的项目使用这个模板：
-
-1. 按照GitHub的[模板存储库指南](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template#creating-a-repository-from-a-template)创建一个新的存储库
-2. 克隆你的新存储库并导航到它：`cd your-project-name`
-3. 更新这个README：
-   - 更改第一行中的项目名称
-   - 删除这个"使用此模板开始"部分
-4. 确保你已经安装了Python 3.12
-
-完成后，继续下面的[设置](#设置)部分。
-
-## 设置
-
-### 安装所需工具
-
-#### 1. uv
-uv 用于管理后端的Python依赖。按照[官方安装指南](https://docs.astral.sh/uv/getting-started/installation/)安装 uv。
-
-#### 2. Bun
-前端使用 Bun 作为包管理器和运行时。按照[官方安装指南](https://bun.sh/docs/installation)安装 Bun：
-
-```bash
-curl -fsSL https://bun.sh/install | bash
+```
+nextjs-fastapi-template/
+├── apps/
+│   ├── backend/              # FastAPI 业务后端
+│   ├── backend_oss_gateway/  # 统一对象存储网关（oss_* 表归属此服务）
+│   └── frontend/             # Next.js
+├── packages/          # 共享库（ts / py / contracts）
+├── shared-data/       # 共享产物（如 openapi.json）
+├── .devcontainer/     # Dev Container 编排（推荐）
+├── docker/            # 独立 Docker Compose（数据库等）
+├── docs/dev/          # 详细开发指南
+├── pyproject.toml     # uv workspace 根
+├── package.json       # Bun workspace 根
+└── Makefile           # 常用命令（make help）
 ```
 
-安装完成后，运行以下命令验证：
+共享包说明见 [packages/README.md](packages/README.md)。
+
+## 快速开始
+
+### 方式一：Dev Container（推荐）
+
+需要 Docker、Docker Compose，以及 Cursor / VS Code 的 Dev Containers 扩展。
 
 ```bash
-bun --version
+make dc              # 启动 DB + MailHog + backend + oss gateway + frontend
+make dc-migrate      # 主 backend 数据库迁移
+make dc-migrate-oss  # OSS Gateway 数据库迁移（oss_* 表）
+make dc-seed         # 种子管理员 admin@dty.com / admin123
+# 浏览器打开 http://localhost:3010/dashboard 可体验文件上传 Demo
 ```
 
-#### 3. Docker
-Docker是在容器化环境中运行项目所需的。按照适当的安装指南进行安装：
+宿主机默认端口见 `.devcontainer/.env`（一般为 Next.js `3010`、FastAPI `8010`、OSS Gateway `8020`、MailHog `8025`）。
 
-- [为Mac安装Docker](https://docs.docker.com/docker-for-mac/install/)
-- [为Windows安装Docker](https://docs.docker.com/docker-for-windows/install/)
-- [获取Linux的Docker CE](https://docs.docker.com/install/linux/docker-ce/)
+### 方式二：本地开发
 
-#### 4. Docker Compose
-确保已经安装了`docker-compose`。参考[Docker Compose安装指南](https://docs.docker.com/compose/install/)。
-
-### 设置环境变量
-
-**后端（`apps/backend/.env`）:**
-将`.env.example`文件复制到`.env`并使用你自己的值更新变量。
-   ```bash
-   cd apps/backend && cp .env.example .env
-   ```
-1. 你只需要更新密钥。你可以使用以下命令生成一个新的密钥：
-   ```bash
-   python3 -c "import secrets; print(secrets.token_hex(32))"
-   ```
-2. DATABASE, MAIL, OPENAPI, CORS和FRONTEND_URL设置已经准备好在本地使用。
-3. 如果你正在使用Docker，DATABASE和MAIL设置已经在Docker Compose中配置。
-4. OPENAPI_URL设置被注释掉。取消注释将隐藏/docs和openapi.json的URL，这对于生产是理想的。
-5. 你可以查看.env.example文件以获取有关变量的更多信息。
-
-**前端（`apps/frontend/.env.local`）:**
-将`.env.example`文件复制到`.env`。这些值不太可能改变，所以你可以将它们保留为它们的值。
-   ```bash
-   cd apps/frontend && cp .env.example .env
-   ```
-
-### 运行数据库
-1. 使用Docker运行数据库以避免本地安装问题。构建并启动数据库容器：
-   ```bash
-   docker compose -f docker/docker-compose.yml build db
-   docker compose -f docker/docker-compose.yml up -d db
-   ```
-2. 运行以下命令应用数据库迁移：
-   ```bash
-   make docker-migrate-db
-   ```
-
-### 构建项目（不使用Docker）:
-要在本地设置项目环境，在**仓库根目录**安装 workspace 依赖（推荐）：
+**环境**：Python 3.12、[uv](https://docs.astral.sh/uv/getting-started/installation/)、[Bun](https://bun.sh/docs/installation)、Docker（用于数据库）。
 
 ```bash
+# 1. 依赖（仓库根目录）
 make sync-deps
+
+# 2. 环境变量
+cp apps/backend/.env.example apps/backend/.env
+cp apps/backend_oss_gateway/.env.example apps/backend_oss_gateway/.env
+cp apps/frontend/.env.example apps/frontend/.env.local
+# 至少替换 backend/.env 中的三个 SECRET_KEY
+# backend 与 oss gateway 的 SERVICE_TOKEN 需一致（见下方 OSS Gateway 章节）
+
+# 3. 数据库（任选其一）
+make dc                    # 用 Dev Container 自带 DB
+# 或 docker compose -f docker/docker-compose.yml up -d db
+
+# 4. 迁移与种子（本地需已配置 DATABASE_URL）
+cd apps/backend && uv run alembic upgrade head
+cd ../backend_oss_gateway && uv run alembic upgrade head
+make seed-admin
+
+# 5. 启动（三个终端）
+make start-backend
+make start-backend-oss-gateway
+make start-frontend
 ```
 
-或分别执行：`uv sync`（Python）、`bun install`（TypeScript）。共享库见 [`packages/README.md`](packages/README.md)。
+本地端口以后端 `start.sh` 与 Next.js 输出为准；前端 `API_BASE_URL` 需与后端一致。
 
-#### 后端
-
-后端依赖由根目录 `uv sync` 安装；开发命令仍在 `apps/backend` 下执行（如 `make start-backend`）。
-
-#### 前端
-
-前端依赖由根目录 `bun install` 安装；开发命令仍在 `apps/frontend` 下执行（如 `make start-frontend`）。
-
-2. 安装PDF生成相关依赖：
-   ```bash
-   bun add pdfkit
-   bun add --dev @types/pdfkit
-   ```
-
-### 构建项目（使用Docker）:
-
-1. 构建后端和前端容器：
-   ```bash
-   make docker-build
-   ```
-
-## 运行应用程序
-
-如果你没有使用Docker：
-
-1. 启动FastAPI服务器：
-   ```bash
-   make start-backend
-   ```
-
-2. 启动Next.js开发服务器：
-   ```bash
-   make start-frontend
-   ```
-
-如果你正在使用Docker：
-1. 启动FastAPI服务器容器：
-   ```bash
-   make docker-start-backend
-   ```
-
-2. 启动Next.js开发服务器容器：
-   ```bash
-   make docker-start-frontend
-   ```
-
-- **后端**: 在`http://localhost:8000`访问API。
-- **前端**: 在`http://localhost:3000`访问Web应用。
-- **PDF生成**: 访问`http://localhost:3000/api/test-pdf`直接下载PDF文件。
-
-### 开发环境下的热重载
-项目在运行应用程序时包括两个热重载，一个用于后端，一个用于前端，当它们检测到更改时会自动重新启动本地服务器。这确保了应用程序始终是最新的，无需手动重新启动。
-
-- **后端热重载**监视后端代码的更改。
-- **前端热重载**监视前端代码的更改，以及由后端生成的`openapi.json`模式的更改。
-
-### 手动执行热重载命令
-你可以手动执行热重载检测到更改时调用的相同命令：
-
-1. 导出`openapi.json`模式：
-   ```bash
-   cd apps/backend && uv run python -m commands.generate_openapi_schema
-   ```
-   或使用Docker：
-   ```bash
-   docker compose -f docker/docker-compose.yml run --rm --no-deps -T backend uv run python -m commands.generate_openapi_schema
-   ```
-
-2. 生成前端客户端：
-   ```bash
-   cd apps/frontend && bun run generate-client
-   ```
-   或使用Docker：
-   ```bash
-   docker compose -f docker/docker-compose.yml run --rm --no-deps -T frontend bun run generate-client
-   ```
-
-## 测试
-要运行测试，你需要运行测试数据库容器：
-   ```bash
-   make docker-up-test-db
-   ```
-
-然后在本地运行测试：
-   ```bash
-   make test-backend
-   make test-frontend
-   ```
-
-或使用Docker：
-   ```bash
-   make docker-test-backend
-   make docker-test-frontend
-   ```
-
-## 预提交设置
-为了保持代码质量和一致性，项目包括两个单独的预提交配置文件：
-- `.pre-commit-config.yaml`用于在本地运行预提交检查。
-- `docker/.pre-commit-config.docker.yaml`用于在Docker中运行预提交检查。
-
-### 安装和激活预提交钩子
-要激活预提交钩子，对每个配置文件运行以下命令：
-
-- **对于本地配置文件**:
-  ```bash
-  pre-commit install -c .pre-commit-config.yaml
-  ```
-
-- **对于Docker配置文件**:
-  ```bash
-  pre-commit install -c docker/.pre-commit-config.docker.yaml
-  ```
-
-### 电子邮件本地主机设置
-
-要在本地设置电子邮件，你需要运行以下命令来启动[MailHog](https://github.com/mailhog/MailHog)：
-   ```bash
-   make docker-up-mailhog
-   ```
-
-- **电子邮件客户端**: 在`http://localhost:8025`访问电子邮件。
-
-### 运行预提交检查
-要手动运行所有文件的预提交检查，使用：
+## 常用命令
 
 ```bash
-pre-commit run --all-files -c .pre-commit-config.yaml
+make help            # 全部命令
+make sync-deps       # uv sync + bun install（根目录）
+make start-backend            # FastAPI + 热重载
+make start-backend-oss-gateway # OSS Gateway + 热重载
+make start-frontend           # Next.js + OpenAPI 客户端 watcher
+make test-backend             # pytest
+make test-backend-oss-gateway # OSS Gateway pytest
+make test-frontend            # jest
+make seed-admin      # 本地创建管理员
+
+# Dev Container
+make dc / make dcd   # 启动 / 停止并清理
+make dc-status       # 查看各服务状态与端口映射（含 OSS Gateway）
+make dc-migrate      # 容器内主 backend 迁移
+make dc-migrate-oss  # 容器内 OSS Gateway 迁移
+make dc-seed         # 容器内种子用户
+make dc-logs s=backend
+make dc-sh           # 进入 workspace shell
 ```
 
-或
+## OSS Gateway（对象存储网关）
+
+`apps/backend_oss_gateway` 是统一对象存储网关模板，屏蔽 Local / S3 / MinIO / 阿里云 OSS 等差异。主 `backend` **只通过 HTTP 调用网关**，禁止在业务代码中直接 import 云厂商 SDK 或写入 `oss_*` 表。
+
+详细网关文档见 [apps/backend_oss_gateway/README.md](apps/backend_oss_gateway/README.md)。
+
+### 架构：模式 C（BFF / 编排）
+
+前端**只请求 Core Backend**；文件上传的 presign、落库、complete 由 Core 内部编排 OSS Gateway 完成：
+
+```
+浏览器 → Core Backend (/files/upload)
+           ├─ presign  → OSS Gateway
+           ├─ 内网上传  → OSS Gateway（Local Provider 等）
+           ├─ complete → OSS Gateway → PostgreSQL (oss_*)
+           └─ 返回 file_id + download_url → 浏览器
+```
+
+| 服务 | 职责 | 默认端口（Dev Container） |
+|------|------|---------------------------|
+| `apps/frontend` | UI、Server Action，只调 Core | 3010 |
+| `apps/backend` | 认证、业务 API、存储编排 | 8010 |
+| `apps/backend_oss_gateway` | 对象存储 API、Provider、`oss_*` 元数据 | 8020 |
+
+### 双后端数据库边界
+
+Core 与 Gateway **共用同一 PostgreSQL 实例**，但迁移与表归属分离：
+
+| 项目 | Core Backend | OSS Gateway |
+|------|--------------|-------------|
+| 业务表 | `user`、`item` 等 | — |
+| 存储元数据 | 禁止直写 | `oss_files`、`oss_file_references` |
+| Alembic 版本表 | `alembic_version` | `alembic_version_oss` |
+| 迁移目录 | `apps/backend/alembic_migrations` | `apps/backend_oss_gateway/alembic_migrations` |
+
+首次启动后务必执行：
 
 ```bash
-pre-commit run --all-files -c docker/.pre-commit-config.docker.yaml
+make dc-migrate      # Core 表
+make dc-migrate-oss  # oss_* 表
 ```
 
-### 更新预提交钩子
-要将钩子更新到它们的最新版本，运行：
+### 文件上传 Demo
 
-```bash
-pre-commit autoupdate
+登录 Dashboard（`http://localhost:3010/dashboard`，种子用户 `admin@dty.com` / `admin123`）后，页面内有 **「文件上传 Demo」** 区块，可走通完整链路。
+
+Dev Container 默认使用 **Local Provider**（文件落在 `apps/backend_oss_gateway/storage/`），无需配置云密钥。
+
+### 关键代码位置
+
+| 路径 | 说明 |
+|------|------|
+| `apps/backend/app/integrations/storage_gateway_client.py` | Core → Gateway HTTP 客户端 |
+| `apps/backend/app/service/file_service.py` | 上传编排（presign / 代理上传 / complete） |
+| `apps/backend/app/routes/files.py` | `POST /files/upload`、`GET /files/{id}/download` |
+| `apps/frontend/app/dashboard/fileUploadDemo.tsx` | Dashboard 上传 Demo UI |
+| `apps/frontend/components/actions/files-action.ts` | Server Action（只调 Core） |
+| `apps/backend_oss_gateway/app/providers/` | Local / S3 / OSS Provider 实现 |
+
+### 环境变量
+
+**Core Backend**（`apps/backend/.env`）：
+
+```env
+OSS_GATEWAY_BASE_URL=http://localhost:8020
+OSS_GATEWAY_SERVICE_TOKEN=dev-service-token-change-in-production
 ```
+
+**OSS Gateway**（`apps/backend_oss_gateway/.env`）：
+
+```env
+SERVICE_TOKENS=dev-service-token-change-in-production   # 与 Core 的 TOKEN 一致
+DEFAULT_PROVIDER=local                                  # 本地开发默认 local
+LOCAL_STORAGE_PATH=./storage
+LOCAL_PUBLIC_BASE_URL=http://localhost:8020             # 浏览器下载链接前缀
+```
+
+生产环境将 `DEFAULT_PROVIDER` 改为 `s3` 或 `oss`，并填写对应云厂商密钥（见 `apps/backend_oss_gateway/.env.example`）。
+
+### MIME 类型
+
+multipart 上传时，部分客户端会把 Excel 等文件标成 `text/plain`。Core 在 `app/utils.py` 的 `resolve_mime_type()` 中会根据**文件扩展名**校正（如 `.xlsx` → `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`），再写入 `oss_files.mime_type`。
+
+## 功能概览
+
+- JWT 认证、邮箱找回密码、预置仪表板
+- **OSS Gateway 模板**：模式 C 文件上传 Demo（Dashboard）
+- 后端/前端热重载；OpenAPI schema 变更自动同步 TS 客户端
+- MailHog 本地邮件（Dev Container 内已集成）
+- CI：`.github/workflows/`（测试、pre-commit、生产部署 workflow）
+
+更细的流程（迁移、测试、pre-commit、排错）见 **[docs/dev/development-guide.md](docs/dev/development-guide.md)**。
+
+## 从模板创建项目
+
+1. 使用 GitHub **Use this template** 创建新仓库并克隆
+2. 修改本 README 标题与项目名
+3. 按上文完成 `make sync-deps` 与环境配置
+
+## 贡献
+
+见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+---
+
+基于 [Vinta Software nextjs-fastapi-template](https://github.com/vintasoftware/nextjs-fastapi-template) 演进；Monorepo 与 Dev Container 工作流已按当前仓库结构调整。

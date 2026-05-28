@@ -58,6 +58,7 @@ find_free_port() {
 load_env() {
   FRONTEND_PORT="${FRONTEND_PORT:-3010}"
   BACKEND_PORT="${BACKEND_PORT:-8010}"
+  BACKEND_OSS_GATEWAY_PORT="${BACKEND_OSS_GATEWAY_PORT:-8020}"
   POSTGRES_PORT="${POSTGRES_PORT:-5442}"
   POSTGRES_TEST_PORT="${POSTGRES_TEST_PORT:-5443}"
   if [[ -f "$ENV_FILE" ]]; then
@@ -67,7 +68,7 @@ load_env() {
 }
 
 ports_unique() {
-  local ports=("$FRONTEND_PORT" "$BACKEND_PORT" "$POSTGRES_PORT" "$POSTGRES_TEST_PORT")
+  local ports=("$FRONTEND_PORT" "$BACKEND_PORT" "$BACKEND_OSS_GATEWAY_PORT" "$POSTGRES_PORT" "$POSTGRES_TEST_PORT")
   local i j
   for ((i = 0; i < ${#ports[@]}; i++)); do
     for ((j = i + 1; j < ${#ports[@]}; j++)); do
@@ -81,6 +82,7 @@ ports_ok() {
   ports_unique \
     && port_available "$FRONTEND_PORT" \
     && port_available "$BACKEND_PORT" \
+    && port_available "$BACKEND_OSS_GATEWAY_PORT" \
     && port_available "$POSTGRES_PORT" \
     && port_available "$POSTGRES_TEST_PORT"
 }
@@ -91,6 +93,7 @@ write_env() {
 # 由 scripts/devcontainer-resolve-ports.sh 自动生成；宿主机端口映射
 FRONTEND_PORT=${FRONTEND_PORT}
 BACKEND_PORT=${BACKEND_PORT}
+BACKEND_OSS_GATEWAY_PORT=${BACKEND_OSS_GATEWAY_PORT}
 POSTGRES_PORT=${POSTGRES_PORT}
 POSTGRES_TEST_PORT=${POSTGRES_TEST_PORT}
 EOF
@@ -108,12 +111,13 @@ load_env
 cleanup_legacy_stack
 
 if [[ -f "$ENV_FILE" ]] && ports_ok; then
-  echo "✅ 使用已有端口: frontend=${FRONTEND_PORT} backend=${BACKEND_PORT} postgres=${POSTGRES_PORT} test=${POSTGRES_TEST_PORT}"
+  echo "✅ 使用已有端口: frontend=${FRONTEND_PORT} backend=${BACKEND_PORT} oss_gateway=${BACKEND_OSS_GATEWAY_PORT} postgres=${POSTGRES_PORT} test=${POSTGRES_TEST_PORT}"
 else
   FRONTEND_PORT="$(find_free_port "${FRONTEND_PORT:-3010}")"
   BACKEND_PORT="$(find_free_port "${BACKEND_PORT:-8010}" "$FRONTEND_PORT")"
-  POSTGRES_PORT="$(find_free_port "${POSTGRES_PORT:-5442}" "$FRONTEND_PORT" "$BACKEND_PORT")"
-  POSTGRES_TEST_PORT="$(find_free_port "${POSTGRES_TEST_PORT:-5443}" "$FRONTEND_PORT" "$BACKEND_PORT" "$POSTGRES_PORT")"
+  BACKEND_OSS_GATEWAY_PORT="$(find_free_port "${BACKEND_OSS_GATEWAY_PORT:-8020}" "$FRONTEND_PORT" "$BACKEND_PORT")"
+  POSTGRES_PORT="$(find_free_port "${POSTGRES_PORT:-5442}" "$FRONTEND_PORT" "$BACKEND_PORT" "$BACKEND_OSS_GATEWAY_PORT")"
+  POSTGRES_TEST_PORT="$(find_free_port "${POSTGRES_TEST_PORT:-5443}" "$FRONTEND_PORT" "$BACKEND_PORT" "$BACKEND_OSS_GATEWAY_PORT" "$POSTGRES_PORT")"
   write_env
-  echo "✅ 已分配端口: frontend=${FRONTEND_PORT} backend=${BACKEND_PORT} postgres=${POSTGRES_PORT} test=${POSTGRES_TEST_PORT}"
+  echo "✅ 已分配端口: frontend=${FRONTEND_PORT} backend=${BACKEND_PORT} oss_gateway=${BACKEND_OSS_GATEWAY_PORT} postgres=${POSTGRES_PORT} test=${POSTGRES_TEST_PORT}"
 fi

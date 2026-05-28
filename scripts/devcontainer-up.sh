@@ -16,7 +16,7 @@ echo "🔨 构建 DevContainer 工作区镜像..."
 "${COMPOSE[@]}" build workspace
 
 echo "🚀 启动 DevContainer 服务..."
-"${COMPOSE[@]}" up -d workspace db db_test mailhog backend frontend
+"${COMPOSE[@]}" up -d workspace db db_test mailhog oss backend frontend
 
 echo "⏳ 等待 postgres 就绪..."
 for _ in $(seq 1 60); do
@@ -28,9 +28,15 @@ done
 
 echo "🗂️  应用数据库迁移..."
 if "${COMPOSE[@]}" exec -T backend uv run alembic upgrade head; then
-  echo "✅ 数据库迁移完成"
+  echo "✅ 主 backend 数据库迁移完成"
 else
-  echo "⚠️  数据库迁移失败（可稍后执行 make dc-migrate）"
+  echo "⚠️  主 backend 数据库迁移失败（可稍后执行 make dc-migrate）"
+fi
+
+if "${COMPOSE[@]}" exec -T oss uv run alembic upgrade head; then
+  echo "✅ OSS Gateway 数据库迁移完成"
+else
+  echo "⚠️  OSS Gateway 数据库迁移失败（可稍后执行 make dc-migrate-oss）"
 fi
 
 echo "👤 创建初始 admin 账号..."
@@ -40,16 +46,18 @@ else
   echo "⚠️  admin 账号创建失败（可稍后执行 make dc-seed）"
 fi
 
-echo "⏳ 等待 FastAPI / Next.js 就绪..."
+echo "⏳ 等待 FastAPI / OSS Gateway / Next.js 就绪..."
 for i in $(seq 1 120); do
   api_code="$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${BACKEND_PORT}/docs" 2>/dev/null || true)"
+  oss_code="$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${BACKEND_OSS_GATEWAY_PORT:-8020}/api/v1/health" 2>/dev/null || true)"
   web_code="$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${FRONTEND_PORT}/" 2>/dev/null || true)"
-  if [[ "$api_code" == "200" && "$web_code" =~ ^(200|307|308)$ ]]; then
+  if [[ "$api_code" == "200" && "$oss_code" == "200" && "$web_code" =~ ^(200|307|308)$ ]]; then
     echo "✅ DevContainer 已就绪（尝试 ${i}/120）"
     echo ""
-    echo "  前端:    http://localhost:${FRONTEND_PORT}"
-    echo "  后端:    http://localhost:${BACKEND_PORT}/docs"
-    echo "  MailHog: http://localhost:8025"
+    echo "  前端:         http://localhost:${FRONTEND_PORT}"
+    echo "  后端:         http://localhost:${BACKEND_PORT}/docs"
+    echo "  OSS Gateway:  http://localhost:${BACKEND_OSS_GATEWAY_PORT:-8020}/docs"
+    echo "  MailHog:      http://localhost:8025"
     echo ""
     echo "  初始 admin: admin@dty.com / admin123"
     echo "  端口配置: ${ENV_FILE}"
@@ -61,9 +69,9 @@ for i in $(seq 1 120); do
   sleep 2
 done
 
-echo "❌ 启动超时：FastAPI=${api_code:-unknown} Next.js=${web_code:-unknown}"
+echo "❌ 启动超时：FastAPI=${api_code:-unknown} OSS=${oss_code:-unknown} Next.js=${web_code:-unknown}"
 echo "---- docker compose ps ----"
 "${COMPOSE[@]}" ps || true
 echo "---- recent logs ----"
-"${COMPOSE[@]}" logs --tail=80 db backend frontend || true
+"${COMPOSE[@]}" logs --tail=80 db backend oss frontend || true
 exit 1

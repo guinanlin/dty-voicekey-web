@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: Set[str]
 
+    # OSS Gateway (storage calls go through gateway, not vendor SDKs)
+    OSS_GATEWAY_BASE_URL: str = "http://localhost:8020"
+    OSS_GATEWAY_SERVICE_TOKEN: str = "dev-service-token-change-in-production"
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )

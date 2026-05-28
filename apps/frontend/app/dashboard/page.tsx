@@ -18,6 +18,7 @@ import { ReadItemResponse } from "@/app/openapi-client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PrintButton } from "./printButton";
+import { FileUploadDemo } from "./fileUploadDemo";
 
 export default async function DashboardPage() {
   const items = (await fetchItems()) as ReadItemResponse;
@@ -37,6 +38,8 @@ export default async function DashboardPage() {
         </Link>
         <PrintButton />
       </div>
+
+      <FileUploadDemo />
 
       <section className="p-6 bg-white rounded-lg shadow-lg mt-8">
         <h2 className="text-xl font-semibold mb-4">Items</h2>

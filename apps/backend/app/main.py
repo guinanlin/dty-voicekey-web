@@ -4,6 +4,7 @@ from .users import auth_backend, fastapi_users, AUTH_URL_PATH
 from fastapi.middleware.cors import CORSMiddleware
 from .utils import simple_generate_unique_route_id
 from app.routes.items import router as items_router
+from app.routes.files import router as files_router
 from app.core.config import settings
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 
@@ -52,6 +53,9 @@ app.include_router(
 
 # Include items routes
 app.include_router(items_router, prefix="/items")
+
+# File upload (orchestrates OSS Gateway internally)
+app.include_router(files_router, prefix="/files")
 
 
 # 自定义 Swagger UI 端点

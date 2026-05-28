@@ -8,14 +8,16 @@
     "db",
     "db_test",
     "mailhog",
+    "oss",
     "backend",
     "frontend"
   ],
   "shutdownAction": "stopCompose",
-  "forwardPorts": [3010, 8010, 5442, 5443, 8025],
+  "forwardPorts": [3010, 8010, 8020, 5442, 5443, 8025],
   "portsAttributes": {
     "3010": { "label": "Next.js", "onAutoForward": "notify" },
     "8010": { "label": "FastAPI", "onAutoForward": "notify" },
+    "8020": { "label": "OSS Gateway", "onAutoForward": "notify" },
     "5442": { "label": "Postgres (主库)", "onAutoForward": "silent" },
     "5443": { "label": "Postgres (测试库)", "onAutoForward": "silent" },
     "8025": { "label": "MailHog UI", "onAutoForward": "silent" }
