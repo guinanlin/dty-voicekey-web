@@ -29,13 +29,11 @@ ENV NODE_ENV=production \
   PORT=3000 \
   HOSTNAME=0.0.0.0
 
-RUN adduser --system --uid 1001 nextjs
+COPY --from=builder --chown=bun:bun /app/public ./public
+COPY --from=builder --chown=bun:bun /app/.next/standalone ./
+COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
 
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
-USER nextjs
+USER bun
 
 EXPOSE 3000
 
