@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: sqlite+aiosqlite:///:memory:
-      TEST_DATABASE_URL: sqlite+aiosqlite:///:memory:
+      DATABASE_URL: 'sqlite+aiosqlite:///:memory:'
+      TEST_DATABASE_URL: 'sqlite+aiosqlite:///:memory:'
       ACCESS_SECRET_KEY: pre-commit-access-secret
       RESET_PASSWORD_SECRET_KEY: pre-commit-reset-secret
       VERIFICATION_SECRET_KEY: pre-commit-verification-secret
