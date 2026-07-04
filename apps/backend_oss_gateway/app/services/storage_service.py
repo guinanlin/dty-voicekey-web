@@ -33,9 +33,7 @@ class StorageService:
         bucket = default_bucket(provider.name)
         object_key = _build_object_key(tenant_id, filename)
         vis = (
-            FileVisibility.PUBLIC
-            if visibility == "public"
-            else FileVisibility.PRIVATE
+            FileVisibility.PUBLIC if visibility == "public" else FileVisibility.PRIVATE
         )
         record = await self.repo.create_pending_file(
             tenant_id=tenant_id,

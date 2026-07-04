@@ -50,7 +50,9 @@ export function HomeDashboard({ stats }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>快捷入口</CardTitle>
-          <CardDescription>进入短信管理，查看、搜索和处理接收的短信</CardDescription>
+          <CardDescription>
+            进入短信管理，查看、搜索和处理接收的短信
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Link href="/sms">

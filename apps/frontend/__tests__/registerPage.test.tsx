@@ -2,10 +2,11 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import Page from "@/app/register/page";
-import { register } from "@/components/actions/register-action";
+import { registerWithVerificationCode } from "@/components/actions/auth-ext-action";
 
-jest.mock("../components/actions/register-action", () => ({
-  register: jest.fn(),
+jest.mock("../components/actions/auth-ext-action", () => ({
+  registerWithVerificationCode: jest.fn(),
+  sendRegisterEmailCode: jest.fn(),
 }));
 
 describe("Register Page", () => {
@@ -13,50 +14,56 @@ describe("Register Page", () => {
     jest.clearAllMocks();
   });
 
-  it("renders the form with email and password input and submit button", () => {
+  it("renders the form with email, code, password input and submit button", () => {
     render(<Page />);
 
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /sign up/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/邮箱/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/验证码/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^密码$/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /注册/i })).toBeInTheDocument();
   });
 
   it("displays success message on successful form submission", async () => {
-    // Mock a successful register
-    (register as jest.Mock).mockResolvedValue({});
+    (registerWithVerificationCode as jest.Mock).mockResolvedValue({});
 
     render(<Page />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /sign up/i });
+    const emailInput = screen.getByLabelText(/邮箱/i);
+    const codeInput = screen.getByLabelText(/验证码/i);
+    const passwordInput = screen.getByLabelText(/^密码$/i);
+    const submitButton = screen.getByRole("button", { name: /注册/i });
 
     fireEvent.change(emailInput, { target: { value: "testuser@example.com" } });
+    fireEvent.change(codeInput, { target: { value: "123456" } });
     fireEvent.change(passwordInput, { target: { value: "@1231231%a" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
       const formData = new FormData();
       formData.set("email", "testuser@example.com");
+      formData.set("code", "123456");
       formData.set("password", "@1231231%a");
-      expect(register).toHaveBeenCalledWith(undefined, formData);
+      expect(registerWithVerificationCode).toHaveBeenCalledWith(
+        undefined,
+        formData,
+      );
     });
   });
 
   it("displays server validation error if register fails", async () => {
-    (register as jest.Mock).mockResolvedValue({
+    (registerWithVerificationCode as jest.Mock).mockResolvedValue({
       server_validation_error: "User already exists",
     });
 
     render(<Page />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /sign up/i });
+    const emailInput = screen.getByLabelText(/邮箱/i);
+    const codeInput = screen.getByLabelText(/验证码/i);
+    const passwordInput = screen.getByLabelText(/^密码$/i);
+    const submitButton = screen.getByRole("button", { name: /注册/i });
 
     fireEvent.change(emailInput, { target: { value: "already@already.com" } });
+    fireEvent.change(codeInput, { target: { value: "123456" } });
     fireEvent.change(passwordInput, { target: { value: "@1231231%a" } });
     fireEvent.click(submitButton);
 
@@ -66,73 +73,78 @@ describe("Register Page", () => {
   });
 
   it("displays server error for unexpected errors", async () => {
-    (register as jest.Mock).mockResolvedValue({
-      server_error: "An unexpected error occurred. Please try again later.",
+    (registerWithVerificationCode as jest.Mock).mockResolvedValue({
+      server_error: "发生了一个意外错误。请稍后再试。",
     });
 
     render(<Page />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /sign up/i });
+    const emailInput = screen.getByLabelText(/邮箱/i);
+    const codeInput = screen.getByLabelText(/验证码/i);
+    const passwordInput = screen.getByLabelText(/^密码$/i);
+    const submitButton = screen.getByRole("button", { name: /注册/i });
 
     fireEvent.change(emailInput, { target: { value: "test@test.com" } });
+    fireEvent.change(codeInput, { target: { value: "123456" } });
     fireEvent.change(passwordInput, { target: { value: "@1231231%a" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "An unexpected error occurred. Please try again later.",
-        ),
+        screen.getByText("发生了一个意外错误。请稍后再试。"),
       ).toBeInTheDocument();
     });
 
     const formData = new FormData();
     formData.set("email", "test@test.com");
+    formData.set("code", "123456");
     formData.set("password", "@1231231%a");
-    expect(register).toHaveBeenCalledWith(undefined, formData);
+    expect(registerWithVerificationCode).toHaveBeenCalledWith(
+      undefined,
+      formData,
+    );
   });
 
   it("displays validation errors if password and email are invalid", async () => {
-    // Mock a successful password register
-    (register as jest.Mock).mockResolvedValue({
+    (registerWithVerificationCode as jest.Mock).mockResolvedValue({
       errors: {
-        email: ["Invalid email address"],
+        email: ["邮箱地址无效"],
         password: [
-          "Password should contain at least one uppercase letter.",
-          "Password should contain at least one special character.",
+          "密码应至少包含一个大写字母。",
+          "密码应至少包含一个特殊字符。",
         ],
       },
     });
 
     render(<Page />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /sign up/i });
+    const emailInput = screen.getByLabelText(/邮箱/i);
+    const codeInput = screen.getByLabelText(/验证码/i);
+    const passwordInput = screen.getByLabelText(/^密码$/i);
+    const submitButton = screen.getByRole("button", { name: /注册/i });
 
     fireEvent.change(emailInput, { target: { value: "email@email.com" } });
+    fireEvent.change(codeInput, { target: { value: "123456" } });
     fireEvent.change(passwordInput, { target: { value: "invalid_password" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "Password should contain at least one uppercase letter.",
-        ),
+        screen.getByText("密码应至少包含一个大写字母。"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(
-          "Password should contain at least one special character.",
-        ),
+        screen.getByText("密码应至少包含一个特殊字符。"),
       ).toBeInTheDocument();
-      expect(screen.getByText("Invalid email address")).toBeInTheDocument();
+      expect(screen.getByText("邮箱地址无效")).toBeInTheDocument();
     });
 
     const formData = new FormData();
     formData.set("email", "email@email.com");
+    formData.set("code", "123456");
     formData.set("password", "invalid_password");
-    expect(register).toHaveBeenCalledWith(undefined, formData);
+    expect(registerWithVerificationCode).toHaveBeenCalledWith(
+      undefined,
+      formData,
+    );
   });
 });

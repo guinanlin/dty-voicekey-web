@@ -44,7 +44,9 @@ class FileService:
         if size == 0:
             raise ValueError("File is empty")
         if size > MAX_UPLOAD_SIZE:
-            raise ValueError(f"File exceeds {MAX_UPLOAD_SIZE // (1024 * 1024)} MB limit")
+            raise ValueError(
+                f"File exceeds {MAX_UPLOAD_SIZE // (1024 * 1024)} MB limit"
+            )
 
         mime_type = resolve_mime_type(file.filename, file.content_type)
         gateway = StorageGatewayClient(

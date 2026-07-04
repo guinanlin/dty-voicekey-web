@@ -22,7 +22,11 @@ import {
   removeSms,
   toggleSmsStar,
 } from "@/components/actions/sms-action";
-import type { SmsListResponse, SmsRead, SmsStatsResponse } from "@/app/openapi-client";
+import type {
+  SmsListResponse,
+  SmsRead,
+  SmsStatsResponse,
+} from "@/app/openapi-client";
 import { formatDateTimeZhCn } from "@/lib/utils";
 
 type Props = {
@@ -34,7 +38,9 @@ type Props = {
 export function SmsListClient({ initialData, phones, stats }: Props) {
   const router = useRouter();
   const [data, setData] = useState(initialData);
-  const [statsOverride, setStatsOverride] = useState<SmsStatsResponse | null>(null);
+  const [statsOverride, setStatsOverride] = useState<SmsStatsResponse | null>(
+    null,
+  );
   const [phonesOverride, setPhonesOverride] = useState<string[] | null>(null);
   const [prevStats, setPrevStats] = useState(stats);
   const [prevPhones, setPrevPhones] = useState(phones);
@@ -59,20 +65,17 @@ export function SmsListClient({ initialData, phones, stats }: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const loadList = useCallback(
-    (p: number, s: string, ph: string) => {
-      startTransition(async () => {
-        const result = await fetchSmsList({
-          page: p,
-          page_size: 20,
-          search: s || undefined,
-          phone: ph || undefined,
-        });
-        if (result) setData(result);
+  const loadList = useCallback((p: number, s: string, ph: string) => {
+    startTransition(async () => {
+      const result = await fetchSmsList({
+        page: p,
+        page_size: 20,
+        search: s || undefined,
+        phone: ph || undefined,
       });
-    },
-    [],
-  );
+      if (result) setData(result);
+    });
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -208,10 +211,18 @@ export function SmsListClient({ initialData, phones, stats }: Props) {
           <span className="text-sm text-muted-foreground">
             已选 {selected.size} 条
           </span>
-          <Button size="sm" variant="outline" onClick={() => handleBatchStar(true)}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleBatchStar(true)}
+          >
             批量标记
           </Button>
-          <Button size="sm" variant="outline" onClick={() => handleBatchDelete()}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleBatchDelete()}
+          >
             批量删除
           </Button>
         </div>
@@ -334,10 +345,20 @@ function SmsItemCard({
               className={`h-4 w-4 ${item.starred ? "fill-yellow-400 text-yellow-400" : ""}`}
             />
           </button>
-          <button type="button" onClick={onCopy} className="p-1 hover:text-blue-500" title="复制">
+          <button
+            type="button"
+            onClick={onCopy}
+            className="p-1 hover:text-blue-500"
+            title="复制"
+          >
             <Copy className="h-4 w-4" />
           </button>
-          <button type="button" onClick={onDelete} className="p-1 hover:text-red-500" title="删除">
+          <button
+            type="button"
+            onClick={onDelete}
+            className="p-1 hover:text-red-500"
+            title="删除"
+          >
             <Trash2 className="h-4 w-4" />
           </button>
           <Link href={`/sms/${item.id}`} className="p-1 text-xs text-blue-500">

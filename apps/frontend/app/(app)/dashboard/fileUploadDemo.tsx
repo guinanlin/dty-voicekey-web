@@ -35,8 +35,8 @@ export function FileUploadDemo() {
     <section className="p-6 bg-white rounded-lg shadow-lg mt-8">
       <h2 className="text-xl font-semibold mb-2">文件上传 Demo</h2>
       <p className="text-sm text-muted-foreground mb-4">
-        模式 C：浏览器只请求 Core Backend，Core 内部编排 OSS Gateway
-        （presign → 上传 → complete）。
+        模式 C：浏览器只请求 Core Backend，Core 内部编排 OSS Gateway （presign →
+        上传 → complete）。
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">

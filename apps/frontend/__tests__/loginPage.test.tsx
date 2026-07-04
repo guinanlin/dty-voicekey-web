@@ -8,17 +8,28 @@ jest.mock("../components/actions/login-action", () => ({
   login: jest.fn(),
 }));
 
+jest.mock("../components/actions/auth-ext-action", () => ({
+  phoneLogin: jest.fn(),
+  sendLoginPhoneCode: jest.fn(),
+}));
+
 describe("Login Page", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("renders the form with username and password input and submit button", () => {
+  const getEmailLoginButton = () =>
+    screen.getAllByRole("button", { name: /登录/i })[0];
+
+  const getEmailInput = () => screen.getByPlaceholderText("admin@dty.com");
+  const getPasswordInput = () => screen.getByLabelText("密码", { exact: true });
+
+  it("renders the form with email and password input and submit button", () => {
     render(<Page />);
 
-    expect(screen.getByLabelText(/用户名/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/密码/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /登录/i })).toBeInTheDocument();
+    expect(getEmailInput()).toBeInTheDocument();
+    expect(getPasswordInput()).toBeInTheDocument();
+    expect(getEmailLoginButton()).toBeInTheDocument();
   });
 
   it("calls login in successful form submission", async () => {
@@ -26,15 +37,11 @@ describe("Login Page", () => {
 
     render(<Page />);
 
-    const usernameInput = screen.getByLabelText(/用户名/i);
-    const passwordInput = screen.getByLabelText(/密码/i);
-    const submitButton = screen.getByRole("button", { name: /登录/i });
-
-    fireEvent.change(usernameInput, {
+    fireEvent.change(getEmailInput(), {
       target: { value: "testuser@example.com" },
     });
-    fireEvent.change(passwordInput, { target: { value: "#123176a@" } });
-    fireEvent.click(submitButton);
+    fireEvent.change(getPasswordInput(), { target: { value: "#123176a@" } });
+    fireEvent.click(getEmailLoginButton());
 
     await waitFor(() => {
       const formData = new FormData();
@@ -45,20 +52,17 @@ describe("Login Page", () => {
   });
 
   it("displays error message if login fails", async () => {
-    // Mock a failed login
     (login as jest.Mock).mockResolvedValue({
       server_validation_error: "LOGIN_BAD_CREDENTIALS",
     });
 
     render(<Page />);
 
-    const usernameInput = screen.getByLabelText(/用户名/i);
-    const passwordInput = screen.getByLabelText(/密码/i);
-    const submitButton = screen.getByRole("button", { name: /登录/i });
-
-    fireEvent.change(usernameInput, { target: { value: "wrong@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "wrongpass" } });
-    fireEvent.click(submitButton);
+    fireEvent.change(getEmailInput(), {
+      target: { value: "wrong@example.com" },
+    });
+    fireEvent.change(getPasswordInput(), { target: { value: "wrongpass" } });
+    fireEvent.click(getEmailLoginButton());
 
     await waitFor(() => {
       expect(screen.getByText("LOGIN_BAD_CREDENTIALS")).toBeInTheDocument();
@@ -72,13 +76,9 @@ describe("Login Page", () => {
 
     render(<Page />);
 
-    const usernameInput = screen.getByLabelText(/用户名/i);
-    const passwordInput = screen.getByLabelText(/密码/i);
-    const submitButton = screen.getByRole("button", { name: /登录/i });
-
-    fireEvent.change(usernameInput, { target: { value: "test@test.com" } });
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
-    fireEvent.click(submitButton);
+    fireEvent.change(getEmailInput(), { target: { value: "test@test.com" } });
+    fireEvent.change(getPasswordInput(), { target: { value: "password123" } });
+    fireEvent.click(getEmailLoginButton());
 
     await waitFor(() => {
       expect(

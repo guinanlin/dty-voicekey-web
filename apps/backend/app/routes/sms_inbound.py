@@ -8,7 +8,6 @@ from app.core.database import get_async_session
 from app.schemas import SmsForwardInboundRequest
 from app.service.sms_forward_service import (
     _error_response,
-    _success_response,
     process_inbound_sms,
     resolve_webhook_user,
     validate_headers,
@@ -32,14 +31,18 @@ async def sms_inbound(
     payload: SmsForwardInboundRequest,
     db: AsyncSession = Depends(get_async_session),
     x_api_key: str | None = Header(default=None, alias="x-api-key"),
-    x_sms_forward_version: str | None = Header(default=None, alias="X-Sms-Forward-Version"),
+    x_sms_forward_version: str | None = Header(
+        default=None, alias="X-Sms-Forward-Version"
+    ),
     x_sms_forward_message_id: str | None = Header(
         default=None, alias="X-Sms-Forward-Message-Id"
     ),
     x_sms_forward_device_id: str | None = Header(
         default=None, alias="X-Sms-Forward-Device-Id"
     ),
-    x_sms_forward_rule_id: str | None = Header(default=None, alias="X-Sms-Forward-Rule-Id"),
+    x_sms_forward_rule_id: str | None = Header(
+        default=None, alias="X-Sms-Forward-Rule-Id"
+    ),
 ):
     request_id = str(uuid.uuid4())
 

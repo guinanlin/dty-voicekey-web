@@ -23,8 +23,6 @@ class AliyunOSSProvider(StorageProvider):
     async def presign_upload(
         self, bucket: str, object_key: str, mime_type: str, size: int
     ) -> PresignUploadResult:
-        b = self._bucket(bucket)
-
         def _presign() -> str:
             return self._bucket.sign_url(
                 "PUT",

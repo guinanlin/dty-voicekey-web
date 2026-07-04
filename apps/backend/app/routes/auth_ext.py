@@ -1,5 +1,4 @@
 import secrets
-import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select

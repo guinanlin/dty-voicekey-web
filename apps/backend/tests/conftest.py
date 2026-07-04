@@ -3,19 +3,25 @@ import pytest_asyncio
 import os
 
 os.environ.setdefault("REDIS_URL", "memory")
+os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
+os.environ.setdefault("TEST_DATABASE_URL", "sqlite+aiosqlite:///:memory:")
+os.environ.setdefault("ACCESS_SECRET_KEY", "test-access-secret")
+os.environ.setdefault("RESET_PASSWORD_SECRET_KEY", "test-reset-secret")
+os.environ.setdefault("VERIFICATION_SECRET_KEY", "test-verification-secret")
+os.environ.setdefault("CORS_ORIGINS", '["*"]')
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from fastapi_users.db import SQLAlchemyUserDatabase
-from fastapi_users.password import PasswordHelper
-import uuid
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine  # noqa: E402
+from fastapi_users.db import SQLAlchemyUserDatabase  # noqa: E402
+from fastapi_users.password import PasswordHelper  # noqa: E402
+import uuid  # noqa: E402
 
-from app.core.config import settings
-from app.model.base_model import User, Base
-from app.core.redis import clear_memory_store
+from app.core.config import settings  # noqa: E402
+from app.model.base_model import User, Base  # noqa: E402
+from app.core.redis import clear_memory_store  # noqa: E402
 
-from app.core.database import get_user_db, get_async_session
-from app.main import app
-from app.users import get_jwt_strategy
+from app.core.database import get_user_db, get_async_session  # noqa: E402
+from app.main import app  # noqa: E402
+from app.users import get_jwt_strategy  # noqa: E402
 
 
 @pytest_asyncio.fixture(scope="function")

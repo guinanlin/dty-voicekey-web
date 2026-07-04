@@ -17,7 +17,9 @@ class SmsMessage(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     forward_id = Column(UUID(as_uuid=True), unique=True, nullable=True, index=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False, index=True)
+    user_id = Column(
+        UUID(as_uuid=True), ForeignKey("user.id"), nullable=False, index=True
+    )
     phone = Column(String(50), nullable=False, index=True)
     content = Column(Text, nullable=False)
     received_at = Column(DateTime(timezone=True), nullable=False, index=True)

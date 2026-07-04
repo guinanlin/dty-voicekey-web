@@ -63,9 +63,7 @@ async def list_sms_messages(
     return list(result.scalars().all()), total
 
 
-async def get_sms_message(
-    db: AsyncSession, user_id: UUID, sms_id: UUID
-) -> SmsMessage:
+async def get_sms_message(db: AsyncSession, user_id: UUID, sms_id: UUID) -> SmsMessage:
     result = await db.execute(
         select(SmsMessage).where(
             SmsMessage.id == sms_id,
@@ -164,9 +162,7 @@ async def soft_delete_sms(db: AsyncSession, user_id: UUID, sms_id: UUID) -> None
     await db.commit()
 
 
-async def batch_soft_delete(
-    db: AsyncSession, user_id: UUID, ids: list[UUID]
-) -> int:
+async def batch_soft_delete(db: AsyncSession, user_id: UUID, ids: list[UUID]) -> int:
     if len(ids) > 100:
         raise HTTPException(status_code=400, detail="单次最多删除 100 条")
 
@@ -203,11 +199,7 @@ async def get_sms_stats(db: AsyncSession, user_id: UUID) -> dict[str, int]:
 
     base = SmsMessage.user_id == user_id, SmsMessage.deleted.is_(False)
 
-    total = (
-        await db.execute(
-            select(func.count()).where(*base)
-        )
-    ).scalar_one()
+    total = (await db.execute(select(func.count()).where(*base))).scalar_one()
 
     starred = (
         await db.execute(

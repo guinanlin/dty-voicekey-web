@@ -5,14 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getErrorMessage(error: {
-  detail?: unknown;
-}): string {
+export function getErrorMessage(error: { detail?: unknown }): string {
   let errorMessage = "发生未知错误";
 
   if (typeof error.detail === "string") {
     errorMessage = error.detail;
-  } else if (typeof error.detail === "object" && error.detail !== null && "reason" in error.detail) {
+  } else if (
+    typeof error.detail === "object" &&
+    error.detail !== null &&
+    "reason" in error.detail
+  ) {
     errorMessage = String((error.detail as { reason: unknown }).reason);
   }
 

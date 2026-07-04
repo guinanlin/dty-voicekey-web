@@ -1,12 +1,9 @@
 import hashlib
-import json
 from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
 from fastapi import status
-
-from app.model.base_model import User
 
 
 def _build_payload(forward_id: str, body: str, api_key: str = "test-webhook-key"):
@@ -108,7 +105,9 @@ class TestSmsInbound:
         assert response.json()["ok"] is True
 
     @pytest.mark.asyncio(loop_scope="function")
-    async def test_inbound_empty_body(self, test_client, db_session, authenticated_user):
+    async def test_inbound_empty_body(
+        self, test_client, db_session, authenticated_user
+    ):
         user = authenticated_user["user"]
         user.webhook_api_key = "test-webhook-key"
         await db_session.commit()

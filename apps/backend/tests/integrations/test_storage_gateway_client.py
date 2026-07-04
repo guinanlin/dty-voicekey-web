@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.integrations.storage_gateway_client import (
     StorageGatewayClient,
@@ -14,7 +14,7 @@ async def test_create_upload_url_success():
         service_token="test-token",
         tenant_id="tenant-1",
     )
-    mock_response = AsyncMock()
+    mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.json.return_value = {
         "file_id": "abc",
@@ -45,7 +45,7 @@ async def test_create_upload_url_success():
 @pytest.mark.asyncio
 async def test_create_upload_url_error():
     client = StorageGatewayClient(base_url="http://gateway.test", service_token="t")
-    mock_response = AsyncMock()
+    mock_response = MagicMock()
     mock_response.status_code = 400
     mock_response.text = "bad request"
 

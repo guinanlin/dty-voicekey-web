@@ -1,9 +1,7 @@
 import hashlib
 import time
 from datetime import datetime, timezone
-from uuid import UUID
 
-from fastapi import Header, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import select

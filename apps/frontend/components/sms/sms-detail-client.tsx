@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Star, Trash2, Copy, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  removeSms,
-  toggleSmsStar,
-} from "@/components/actions/sms-action";
+import { removeSms, toggleSmsStar } from "@/components/actions/sms-action";
 import type { SmsRead } from "@/app/openapi-client";
 import { formatDateTimeZhCn } from "@/lib/utils";
 
@@ -74,13 +71,23 @@ export function SmsDetailClient({ sms }: { sms: SmsRead }) {
             <Copy className="h-4 w-4 mr-1" />
             复制内容
           </Button>
-          <Button variant="outline" size="sm" onClick={handleStar} disabled={pending}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleStar}
+            disabled={pending}
+          >
             <Star
               className={`h-4 w-4 mr-1 ${sms.starred ? "fill-yellow-400 text-yellow-400" : ""}`}
             />
             {sms.starred ? "取消标记" : "标记"}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleDelete} disabled={pending}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDelete}
+            disabled={pending}
+          >
             <Trash2 className="h-4 w-4 mr-1" />
             删除
           </Button>

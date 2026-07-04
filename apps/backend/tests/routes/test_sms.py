@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 
 import pytest
 from fastapi import status
-from sqlalchemy import select
 
 from app.core.redis import redis_setex
 from app.model.sms_model import SmsMessage
@@ -50,7 +49,9 @@ class TestSms:
         assert response.json()["total"] == 1
 
     @pytest.mark.asyncio(loop_scope="function")
-    async def test_star_and_delete_sms(self, test_client, db_session, authenticated_user):
+    async def test_star_and_delete_sms(
+        self, test_client, db_session, authenticated_user
+    ):
         sms = SmsMessage(
             user_id=authenticated_user["user"].id,
             phone="10010",

@@ -30,10 +30,7 @@ function getBreadcrumbs(pathname: string): Crumb[] {
     return [{ label: "首页" }];
   }
   if (pathname === "/sms") {
-    return [
-      { label: "首页", href: "/home" },
-      { label: "短信管理" },
-    ];
+    return [{ label: "首页", href: "/home" }, { label: "短信管理" }];
   }
   if (pathname.startsWith("/sms/")) {
     return [
@@ -43,10 +40,7 @@ function getBreadcrumbs(pathname: string): Crumb[] {
     ];
   }
   if (pathname.startsWith("/dashboard")) {
-    return [
-      { label: "首页", href: "/home" },
-      { label: "开发演示" },
-    ];
+    return [{ label: "首页", href: "/home" }, { label: "开发演示" }];
   }
   return [{ label: "首页", href: "/home" }];
 }
@@ -70,10 +64,7 @@ export function AppHeader({ user }: { user: UserRead | null }) {
               <BreadcrumbItem>
                 {crumb.href ? (
                   <BreadcrumbLink asChild>
-                    <Link
-                      href={crumb.href}
-                      className="flex items-center gap-1"
-                    >
+                    <Link href={crumb.href} className="flex items-center gap-1">
                       {index === 0 && <Home className="h-4 w-4" />}
                       {crumb.label}
                     </Link>

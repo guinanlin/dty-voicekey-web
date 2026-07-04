@@ -31,10 +31,10 @@ export default function RegisterPage() {
       <form action={dispatch}>
         <Card className="w-full max-w-sm rounded-lg shadow-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 md:min-w-[450px]">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-semibold">传声筒 · 注册</CardTitle>
-            <CardDescription>
-              输入邮箱、密码并完成验证码验证
-            </CardDescription>
+            <CardTitle className="text-2xl font-semibold">
+              传声筒 · 注册
+            </CardTitle>
+            <CardDescription>输入邮箱、密码并完成验证码验证</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 p-6">
             <div className="grid gap-2">

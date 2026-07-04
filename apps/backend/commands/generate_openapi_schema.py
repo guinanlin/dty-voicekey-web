@@ -13,6 +13,7 @@ OUTPUT_FILE = os.getenv("OPENAPI_OUTPUT_FILE")
 def generate_openapi_schema(output_file):
     schema = app.openapi()
     output_path = Path(output_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     updated_schema = remove_operation_id_tag(schema)
     new_schema_json = json.dumps(updated_schema, indent=2)

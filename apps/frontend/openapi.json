@@ -1579,6 +1579,146 @@
           }
         ]
       }
+    },
+    "/v1/sms/health": {
+      "get": {
+        "tags": [
+          "sms-forward"
+        ],
+        "summary": "Inbound Health",
+        "operationId": "inbound_health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms/inbound": {
+      "post": {
+        "tags": [
+          "sms-forward"
+        ],
+        "summary": "Sms Inbound",
+        "operationId": "sms_inbound",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "X-Sms-Forward-Version",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Sms-Forward-Version"
+            }
+          },
+          {
+            "name": "X-Sms-Forward-Message-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Sms-Forward-Message-Id"
+            }
+          },
+          {
+            "name": "X-Sms-Forward-Device-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Sms-Forward-Device-Id"
+            }
+          },
+          {
+            "name": "X-Sms-Forward-Rule-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Sms-Forward-Rule-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsForwardInboundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2052,6 +2192,191 @@
           "ids"
         ],
         "title": "SmsBatchUploadResponse"
+      },
+      "SmsForwardDevice": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "manufacturer": {
+            "type": "string",
+            "title": "Manufacturer"
+          },
+          "androidSdk": {
+            "type": "integer",
+            "title": "Androidsdk"
+          },
+          "appVersion": {
+            "type": "string",
+            "title": "Appversion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "model",
+          "manufacturer",
+          "androidSdk",
+          "appVersion"
+        ],
+        "title": "SmsForwardDevice"
+      },
+      "SmsForwardInboundRequest": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "event": {
+            "type": "string",
+            "title": "Event"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "device": {
+            "$ref": "#/components/schemas/SmsForwardDevice"
+          },
+          "rule": {
+            "$ref": "#/components/schemas/SmsForwardRule"
+          },
+          "message": {
+            "$ref": "#/components/schemas/SmsForwardMessage"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/SmsForwardMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "event",
+          "version",
+          "device",
+          "rule",
+          "message",
+          "meta"
+        ],
+        "title": "SmsForwardInboundRequest"
+      },
+      "SmsForwardMessage": {
+        "properties": {
+          "from": {
+            "type": "string",
+            "title": "From"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "timestamp": {
+            "type": "integer",
+            "title": "Timestamp"
+          },
+          "subscriptionId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscriptionid"
+          },
+          "simSlot": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simslot"
+          },
+          "partCount": {
+            "type": "integer",
+            "title": "Partcount",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "required": [
+          "from",
+          "body",
+          "timestamp"
+        ],
+        "title": "SmsForwardMessage"
+      },
+      "SmsForwardMeta": {
+        "properties": {
+          "receivedAt": {
+            "type": "integer",
+            "title": "Receivedat"
+          },
+          "sentAt": {
+            "type": "integer",
+            "title": "Sentat"
+          },
+          "attempt": {
+            "type": "integer",
+            "title": "Attempt",
+            "default": 1
+          },
+          "contentLength": {
+            "type": "integer",
+            "title": "Contentlength"
+          },
+          "contentSha256": {
+            "type": "string",
+            "title": "Contentsha256"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receivedAt",
+          "sentAt",
+          "contentLength",
+          "contentSha256"
+        ],
+        "title": "SmsForwardMeta"
+      },
+      "SmsForwardRule": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "senderFilter": {
+            "type": "string",
+            "title": "Senderfilter"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "senderFilter"
+        ],
+        "title": "SmsForwardRule"
       },
       "SmsListResponse": {
         "properties": {

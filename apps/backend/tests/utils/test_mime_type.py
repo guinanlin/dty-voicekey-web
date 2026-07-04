@@ -9,7 +9,9 @@ def test_resolve_mime_type_from_xlsx_extension():
 
 
 def test_resolve_mime_type_keeps_explicit_type():
-    assert resolve_mime_type("report.xlsx", "application/custom") == "application/custom"
+    assert (
+        resolve_mime_type("report.xlsx", "application/custom") == "application/custom"
+    )
 
 
 def test_resolve_mime_type_fallback_octet_stream():

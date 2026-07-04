@@ -71,16 +71,12 @@ class S3CompatibleProvider(StorageProvider):
 
     async def delete(self, bucket: str, object_key: str) -> None:
         b = self._bucket(bucket)
-        await asyncio.to_thread(
-            self._client.delete_object, Bucket=b, Key=object_key
-        )
+        await asyncio.to_thread(self._client.delete_object, Bucket=b, Key=object_key)
 
     async def exists(self, bucket: str, object_key: str) -> bool:
         b = self._bucket(bucket)
         try:
-            await asyncio.to_thread(
-                self._client.head_object, Bucket=b, Key=object_key
-            )
+            await asyncio.to_thread(self._client.head_object, Bucket=b, Key=object_key)
             return True
         except Exception:
             return False
