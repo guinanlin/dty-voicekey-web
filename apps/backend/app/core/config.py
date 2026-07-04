@@ -50,6 +50,13 @@ class Settings(BaseSettings):
     SMS_FORWARD_DEFAULT_USER_EMAIL: str = "admin@dty.com"
     SMS_FORWARD_DEFAULT_API_KEY: str = "dev-sms-forward-key-change-in-production"
 
+    # Cloud Relay Hub
+    RELAY_PUBLIC_WS_URL: str = "ws://localhost:8600/ws"
+    RELAY_REQUIRE_WSS: bool = False
+    RELAY_PAIR_TOKEN_TTL_DAYS: int = 0
+    RELAY_MAX_PHONES_PER_PAIR: int = 3
+    RELAY_TRANSMIT_RATE_LIMIT: int = 10
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )

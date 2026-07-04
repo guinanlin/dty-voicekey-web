@@ -17,6 +17,7 @@ import uuid  # noqa: E402
 
 from app.core.config import settings  # noqa: E402
 from app.model.base_model import User, Base  # noqa: E402
+from app.model.relay_model import RelayPair, RelayMessage  # noqa: F401,E402
 from app.core.redis import clear_memory_store  # noqa: E402
 
 from app.core.database import get_user_db, get_async_session  # noqa: E402

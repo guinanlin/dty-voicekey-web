@@ -2,6 +2,7 @@
 set -e
 
 cd "$(dirname "$0")"
+mkdir -p logs
 
 if [ "${RUN_DB_MIGRATIONS:-1}" = "1" ]; then
   echo "Running database migrations..."

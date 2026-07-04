@@ -181,3 +181,93 @@ class SmsForwardInboundRequest(BaseModel):
     rule: SmsForwardRule
     message: SmsForwardMessage
     meta: SmsForwardMeta
+
+
+# --- Cloud Relay ---
+
+
+class RelayPairCreateRequest(BaseModel):
+    device_name: str | None = None
+
+
+class RelayQrPayload(BaseModel):
+    v: int = 1
+    mode: str = "relay"
+    ws: str
+    pair: str
+
+
+class RelayPairCreateResponse(BaseModel):
+    pair_id: str
+    pair_token: str
+    agent_token: str
+    relay_ws_url: str
+    relay_agent_url: str
+    expires_at: datetime
+    qr_payload: RelayQrPayload
+
+
+class RelayPairRead(BaseModel):
+    pair_id: str
+    device_name: str | None
+    expires_at: datetime
+    revoked_at: datetime | None
+    created_at: datetime
+    pc_online: bool = False
+    phone_connections: int = 0
+
+    model_config = {"from_attributes": True}
+
+
+class RelayPairListResponse(BaseModel):
+    items: list[RelayPairRead]
+
+
+class RelayPairStatusResponse(BaseModel):
+    pair_id: str
+    pc_online: bool
+    phone_connections: int
+    last_agent_seen_at: datetime | None = None
+
+
+class RelayPairRefreshResponse(BaseModel):
+    pair_token: str
+    expires_at: datetime
+    qr_payload: RelayQrPayload
+
+
+class RelayHealthResponse(BaseModel):
+    status: str
+    ws_connections: int
+
+
+class RelayMessageRead(BaseModel):
+    id: UUID
+    pair_id: str
+    text: str
+    mode: str | None
+    after_key: str | None
+    smart_mode: bool
+    smart_action: str | None
+    delivery_status: str
+    ack_ok: bool | None
+    ack_error: str | None
+    client_ip: str | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class RelayMessageListResponse(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    items: list[RelayMessageRead]
+
+
+class RelayMessageStatsResponse(BaseModel):
+    total: int
+    today: int
+    delivered: int
+    pc_offline: int
+

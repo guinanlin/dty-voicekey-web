@@ -9,6 +9,7 @@ from sqlalchemy import select
 from app.core.database import async_session_maker
 from app.model.base_model import User
 import app.model.item_model  # noqa: F401 — register Item for User relationship
+import app.model.relay_model  # noqa: F401 — register RelayPair/RelayMessage for User relationship
 import app.model.sms_model  # noqa: F401 — register SmsMessage for User relationship
 
 load_dotenv()

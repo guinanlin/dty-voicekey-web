@@ -12,6 +12,8 @@ services:
       - RESET_PASSWORD_SECRET_KEY=dev-reset-secret-change-in-production
       - VERIFICATION_SECRET_KEY=dev-verification-secret-change-in-production
       - CORS_ORIGINS=["*"]
+      - RELAY_PUBLIC_WS_URL=ws://localhost:8600/ws
+      - RELAY_REQUIRE_WSS=false
     ports:
       - "8600:8000"
     networks:

@@ -42,6 +42,9 @@ function getBreadcrumbs(pathname: string): Crumb[] {
   if (pathname.startsWith("/dashboard")) {
     return [{ label: "首页", href: "/home" }, { label: "开发演示" }];
   }
+  if (pathname === "/craftsman") {
+    return [{ label: "首页", href: "/home" }, { label: "工匠" }];
+  }
   return [{ label: "首页", href: "/home" }];
 }
 
@@ -55,7 +58,7 @@ export function AppHeader({ user }: { user: UserRead | null }) {
   const crumbs = getBreadcrumbs(pathname);
 
   return (
-    <header className="relative z-20 flex h-16 items-center justify-between border-b bg-background px-6">
+    <header className="z-20 flex h-16 shrink-0 items-center justify-between border-b bg-background px-6">
       <Breadcrumb>
         <BreadcrumbList>
           {crumbs.map((crumb, index) => (

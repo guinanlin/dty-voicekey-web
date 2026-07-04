@@ -8,6 +8,10 @@ from app.routes.files import router as files_router
 from app.routes.auth_ext import router as auth_ext_router
 from app.routes.sms import router as sms_router
 from app.routes.sms_inbound import router as sms_inbound_router
+from app.routes.relay_pairs import router as relay_pairs_router
+from app.routes.relay_messages import router as relay_messages_router
+from app.ws.relay_hub import router as relay_ws_router
+from app.ws.relay_web_ws import router as relay_web_ws_router
 from app.core.config import settings
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 
@@ -68,6 +72,12 @@ app.include_router(sms_router, prefix="/sms")
 
 # SMS Forward Webhook (Android device)
 app.include_router(sms_inbound_router, prefix="/v1/sms")
+
+# Cloud Relay Hub
+app.include_router(relay_pairs_router, prefix="/api/v1")
+app.include_router(relay_messages_router, prefix="/relay")
+app.include_router(relay_ws_router)
+app.include_router(relay_web_ws_router)
 
 
 # 自定义 Swagger UI 端点

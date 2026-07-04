@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   batchRemove,
   batchStar,
@@ -164,46 +163,51 @@ export function SmsListClient({ initialData, phones, stats }: Props) {
   const totalPages = Math.max(1, Math.ceil(data.total / data.page_size));
 
   return (
-    <div className="space-y-4">
-      {statsData && (
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline">全部 {statsData.total}</Badge>
-          <Badge variant="outline">已标记 {statsData.starred}</Badge>
-          <Badge variant="outline">今日 {statsData.today}</Badge>
-          <Badge variant="outline">本周 {statsData.this_week}</Badge>
-        </div>
-      )}
-
-      <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-        <Input
-          placeholder="搜索短信内容..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1"
-        />
-        <select
-          className="border rounded-md px-3 py-2 text-sm bg-background"
-          value={phoneFilter}
-          onChange={(e) => setPhoneFilter(e.target.value)}
-        >
-          <option value="">全部号码</option>
-          {phoneList.map((p) => (
-            <option key={p} value={p}>
-              {p}
-            </option>
-          ))}
-        </select>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleRefresh}
-          disabled={refreshing || pending}
-          title="刷新"
-        >
-          <RefreshCw
-            className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {statsData && (
+          <p className="text-xs text-muted-foreground shrink-0 tabular-nums">
+            全部 {statsData.total}
+            <span className="mx-1.5 text-border">·</span>
+            已标记 {statsData.starred}
+            <span className="mx-1.5 text-border">·</span>
+            今日 {statsData.today}
+            <span className="mx-1.5 text-border">·</span>
+            本周 {statsData.this_week}
+          </p>
+        )}
+        <div className="flex min-w-[240px] flex-1 items-center gap-2">
+          <Input
+            placeholder="搜索..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8 flex-1"
           />
-        </Button>
+          <select
+            className="h-8 shrink-0 rounded-md border bg-background px-2 text-sm"
+            value={phoneFilter}
+            onChange={(e) => setPhoneFilter(e.target.value)}
+          >
+            <option value="">全部号码</option>
+            {phoneList.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={handleRefresh}
+            disabled={refreshing || pending}
+            title="刷新"
+          >
+            <RefreshCw
+              className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`}
+            />
+          </Button>
+        </div>
       </div>
 
       {selected.size > 0 && (
@@ -315,8 +319,8 @@ function SmsItemCard({
     item.content.length > 80 ? `${item.content.slice(0, 80)}...` : item.content;
 
   return (
-    <div className="border rounded-lg bg-background p-4 shadow-sm">
-      <div className="flex items-start gap-3">
+    <div className="rounded-md border bg-background px-3 py-2.5">
+      <div className="flex items-start gap-2.5">
         <input
           type="checkbox"
           checked={selected}
@@ -325,7 +329,7 @@ function SmsItemCard({
         />
         <div className="flex-1 min-w-0 cursor-pointer" onClick={onToggleExpand}>
           <div className="flex items-center justify-between gap-2">
-            <span className="font-medium">📱 {item.phone}</span>
+            <span className="text-sm font-medium">{item.phone}</span>
             <span className="text-xs text-muted-foreground shrink-0">
               {receivedAt}
             </span>

@@ -18,3 +18,9 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     sms_messages = relationship(
         "SmsMessage", back_populates="user", cascade="all, delete-orphan"
     )
+    relay_pairs = relationship(
+        "RelayPair", back_populates="user", cascade="all, delete-orphan"
+    )
+    relay_messages = relationship(
+        "RelayMessage", back_populates="user", cascade="all, delete-orphan"
+    )
