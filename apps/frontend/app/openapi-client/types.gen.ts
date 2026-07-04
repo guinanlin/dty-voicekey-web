@@ -123,6 +123,47 @@ export type SmsBatchUploadResponse = {
     ids: Array<(string)>;
 };
 
+export type SmsForwardDevice = {
+    id: string;
+    model: string;
+    manufacturer: string;
+    androidSdk: number;
+    appVersion: string;
+};
+
+export type SmsForwardInboundRequest = {
+    id: string;
+    event: string;
+    version: string;
+    device: SmsForwardDevice;
+    rule: SmsForwardRule;
+    message: SmsForwardMessage;
+    meta: SmsForwardMeta;
+};
+
+export type SmsForwardMessage = {
+    from: string;
+    body: string;
+    timestamp: number;
+    subscriptionId?: (number | null);
+    simSlot?: (number | null);
+    partCount?: number;
+};
+
+export type SmsForwardMeta = {
+    receivedAt: number;
+    sentAt: number;
+    attempt?: number;
+    contentLength: number;
+    contentSha256: string;
+};
+
+export type SmsForwardRule = {
+    id: number;
+    name?: (string | null);
+    senderFilter: string;
+};
+
 export type SmsListResponse = {
     total: number;
     page: number;
@@ -445,3 +486,22 @@ export type BatchDeleteSmsData = {
 export type BatchDeleteSmsResponse = (SmsBatchActionResponse);
 
 export type BatchDeleteSmsError = (HTTPValidationError);
+
+export type InboundHealthResponse = (unknown);
+
+export type InboundHealthError = unknown;
+
+export type SmsInboundData = {
+    body: SmsForwardInboundRequest;
+    headers?: {
+        'x-api-key'?: (string | null);
+        'X-Sms-Forward-Device-Id'?: (string | null);
+        'X-Sms-Forward-Message-Id'?: (string | null);
+        'X-Sms-Forward-Rule-Id'?: (string | null);
+        'X-Sms-Forward-Version'?: (string | null);
+    };
+};
+
+export type SmsInboundResponse = (unknown);
+
+export type SmsInboundError = (HTTPValidationError);
