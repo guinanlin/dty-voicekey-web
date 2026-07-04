@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:3600"
 
     # CORS
-    CORS_ORIGINS: Set[str]
+    CORS_ORIGINS: Set[str] = {"*"}
 
     # OSS Gateway (storage calls go through gateway, not vendor SDKs)
     OSS_GATEWAY_BASE_URL: str = "http://localhost:8610"

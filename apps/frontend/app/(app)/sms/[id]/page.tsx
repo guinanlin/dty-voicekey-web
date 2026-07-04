@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { fetchSmsDetail } from "@/components/actions/sms-action";
 import { SmsDetailClient } from "@/components/sms/sms-detail-client";

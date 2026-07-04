@@ -34,8 +34,22 @@ type Props = {
 export function SmsListClient({ initialData, phones, stats }: Props) {
   const router = useRouter();
   const [data, setData] = useState(initialData);
-  const [statsData, setStatsData] = useState(stats);
-  const [phoneList, setPhoneList] = useState(phones);
+  const [statsOverride, setStatsOverride] = useState<SmsStatsResponse | null>(null);
+  const [phonesOverride, setPhonesOverride] = useState<string[] | null>(null);
+  const [prevStats, setPrevStats] = useState(stats);
+  const [prevPhones, setPrevPhones] = useState(phones);
+
+  if (stats !== prevStats) {
+    setPrevStats(stats);
+    setStatsOverride(null);
+  }
+  if (phones !== prevPhones) {
+    setPrevPhones(phones);
+    setPhonesOverride(null);
+  }
+
+  const statsData = statsOverride ?? stats;
+  const phoneList = phonesOverride ?? phones;
   const [search, setSearch] = useState("");
   const [phoneFilter, setPhoneFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -67,14 +81,6 @@ export function SmsListClient({ initialData, phones, stats }: Props) {
     }, 300);
     return () => clearTimeout(timer);
   }, [search, phoneFilter, loadList]);
-
-  useEffect(() => {
-    setStatsData(stats);
-  }, [stats]);
-
-  useEffect(() => {
-    setPhoneList(phones);
-  }, [phones]);
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
@@ -143,8 +149,8 @@ export function SmsListClient({ initialData, phones, stats }: Props) {
         });
         if (result) {
           setData(result.list);
-          setStatsData(result.stats);
-          setPhoneList(result.phones);
+          setStatsOverride(result.stats);
+          setPhonesOverride(result.phones);
         }
       } finally {
         setRefreshing(false);
