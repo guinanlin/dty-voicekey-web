@@ -8,20 +8,18 @@ export async function logout() {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
-    return { message: "No access token found" };
-  }
-
-  const { error } = await authJwtLogout({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (error) {
-    return { message: error };
+  if (token) {
+    await authJwtLogout({
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   }
 
   cookieStore.delete("accessToken");
-  redirect(`/login`);
+  redirect("/login");
+}
+
+export async function logoutFormAction(_formData: FormData): Promise<void> {
+  await logout();
 }

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     LOCAL_STORAGE_PATH: str = "./storage"
     LOCAL_BUCKET: str = "local-dev"
-    LOCAL_PUBLIC_BASE_URL: str = "http://localhost:8020"
+    LOCAL_PUBLIC_BASE_URL: str = "http://localhost:8610"
 
     S3_ENDPOINT_URL: str | None = None
     S3_ACCESS_KEY: str | None = None

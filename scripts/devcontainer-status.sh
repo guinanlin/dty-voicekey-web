@@ -5,11 +5,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$ROOT/.devcontainer/.env"
 
-FRONTEND_PORT="${FRONTEND_PORT:-3010}"
-BACKEND_PORT="${BACKEND_PORT:-8010}"
-BACKEND_OSS_GATEWAY_PORT="${BACKEND_OSS_GATEWAY_PORT:-8020}"
-POSTGRES_PORT="${POSTGRES_PORT:-5442}"
-POSTGRES_TEST_PORT="${POSTGRES_TEST_PORT:-5443}"
+FRONTEND_PORT="${FRONTEND_PORT:-3600}"
+BACKEND_PORT="${BACKEND_PORT:-8600}"
+BACKEND_OSS_GATEWAY_PORT="${BACKEND_OSS_GATEWAY_PORT:-8610}"
+POSTGRES_PORT="${POSTGRES_PORT:-5600}"
+POSTGRES_TEST_PORT="${POSTGRES_TEST_PORT:-5610}"
+MAILHOG_SMTP_PORT="${MAILHOG_SMTP_PORT:-8630}"
+MAILHOG_UI_PORT="${MAILHOG_UI_PORT:-8650}"
 
 if [[ -f "$ENV_FILE" ]]; then
   # shellcheck source=/dev/null
@@ -71,7 +73,7 @@ declare -a rows=(
   "oss|${BACKEND_OSS_GATEWAY_PORT}→8000|$(port_listen "$BACKEND_OSS_GATEWAY_PORT")|http://localhost:${BACKEND_OSS_GATEWAY_PORT}/docs"
   "db|${POSTGRES_PORT}→5432|$(port_listen "$POSTGRES_PORT")|postgresql://postgres:***@localhost:${POSTGRES_PORT}/mydatabase"
   "db_test|${POSTGRES_TEST_PORT}→5432|$(port_listen "$POSTGRES_TEST_PORT")|postgresql://postgres:***@localhost:${POSTGRES_TEST_PORT}/testdatabase"
-  "mailhog|1025→1025, 8025→8025|$(port_listen 8025)|http://localhost:8025 (UI)"
+  "mailhog|${MAILHOG_SMTP_PORT}→1025, ${MAILHOG_UI_PORT}→8025|$(port_listen "$MAILHOG_UI_PORT")|http://localhost:${MAILHOG_UI_PORT} (UI)"
   "workspace|—|—|make dc-sh"
 )
 
@@ -86,7 +88,7 @@ echo "HTTP 探测（仅 Web 服务）"
 printf "  frontend  %s  →  %s\n" "http://localhost:${FRONTEND_PORT}/" "$(http_probe "http://127.0.0.1:${FRONTEND_PORT}/")"
 printf "  backend   %s  →  %s\n" "http://localhost:${BACKEND_PORT}/docs" "$(http_probe "http://127.0.0.1:${BACKEND_PORT}/docs")"
 printf "  oss_gw    %s  →  %s\n" "http://localhost:${BACKEND_OSS_GATEWAY_PORT}/api/v1/health" "$(http_probe "http://127.0.0.1:${BACKEND_OSS_GATEWAY_PORT}/api/v1/health")"
-printf "  mailhog   %s  →  %s\n" "http://localhost:8025/" "$(http_probe "http://127.0.0.1:8025/")"
+printf "  mailhog   %s  →  %s\n" "http://localhost:${MAILHOG_UI_PORT}/" "$(http_probe "http://127.0.0.1:${MAILHOG_UI_PORT}/")"
 
 echo ""
 echo "docker compose ps"

@@ -45,5 +45,5 @@ export async function login(prevState: unknown, formData: FormData) {
       server_error: "发生了一个意外错误。请稍后再试。",
     };
   }
-  redirect("/dashboard");
+  redirect("/home");
 }

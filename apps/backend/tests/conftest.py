@@ -1,5 +1,9 @@
 from httpx import AsyncClient, ASGITransport
 import pytest_asyncio
+import os
+
+os.environ.setdefault("REDIS_URL", "memory")
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from fastapi_users.db import SQLAlchemyUserDatabase
 from fastapi_users.password import PasswordHelper
@@ -7,6 +11,7 @@ import uuid
 
 from app.core.config import settings
 from app.model.base_model import User, Base
+from app.core.redis import clear_memory_store
 
 from app.core.database import get_user_db, get_async_session
 from app.main import app
@@ -16,6 +21,7 @@ from app.users import get_jwt_strategy
 @pytest_asyncio.fixture(scope="function")
 async def engine():
     """Create a fresh test database engine for each test function."""
+    clear_memory_store()
     engine = create_async_engine(settings.TEST_DATABASE_URL, echo=True)
 
     async with engine.begin() as conn:

@@ -5,10 +5,15 @@ services:
     environment:
       - OPENAPI_OUTPUT_FILE=./shared-data/openapi.json
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/mydatabase
-      - TEST_DATABASE_URL=postgresql+asyncpg://postgres:password@db:5433/testdatabase
+      - TEST_DATABASE_URL=postgresql+asyncpg://postgres:password@db_test:5432/testdatabase
+      - REDIS_URL=redis://redis:6379/0
       - MAIL_SERVER=mailhog
+      - ACCESS_SECRET_KEY=dev-access-secret-change-in-production
+      - RESET_PASSWORD_SECRET_KEY=dev-reset-secret-change-in-production
+      - VERIFICATION_SECRET_KEY=dev-verification-secret-change-in-production
+      - CORS_ORIGINS=["*"]
     ports:
-      - "8000:8000"
+      - "8600:8000"
     networks:
       - my_network
     volumes:
@@ -17,6 +22,15 @@ services:
       - ../shared-data:/app/shared-data
     depends_on:
       - db
+      - redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+    volumes:
+      - redis_data:/data
   db:
     image: postgres:17
     environment:
@@ -24,7 +38,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydatabase
     ports:
-      - "5432:5432"
+      - "5600:5432"
     networks:
       - my_network
     volumes:
@@ -36,7 +50,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: testdatabase
     ports:
-      - "5433:5432"
+      - "5610:5432"
     networks:
       - my_network
     restart: always
@@ -45,7 +59,7 @@ services:
       context: ../apps/frontend
     user: bun
     ports:
-      - "3000:3000"
+      - "3600:3000"
     networks:
       - my_network
     environment:
@@ -59,13 +73,14 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "1025:1025" # SMTP server
-      - "8025:8025" # Web UI
+      - "8630:1025" # SMTP server
+      - "8650:8025" # Web UI
     networks:
       - my_network
 
 volumes:
   postgres_data:
+  redis_data:
   frontend-node-modules:
   backend-venv:
 

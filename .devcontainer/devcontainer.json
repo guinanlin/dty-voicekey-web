@@ -13,14 +13,15 @@
     "frontend"
   ],
   "shutdownAction": "stopCompose",
-  "forwardPorts": [3010, 8010, 8020, 5442, 5443, 8025],
+  "forwardPorts": [3600, 8600, 8610, 5600, 5610, 8630, 8650],
   "portsAttributes": {
-    "3010": { "label": "Next.js", "onAutoForward": "notify" },
-    "8010": { "label": "FastAPI", "onAutoForward": "notify" },
-    "8020": { "label": "OSS Gateway", "onAutoForward": "notify" },
-    "5442": { "label": "Postgres (主库)", "onAutoForward": "silent" },
-    "5443": { "label": "Postgres (测试库)", "onAutoForward": "silent" },
-    "8025": { "label": "MailHog UI", "onAutoForward": "silent" }
+    "3600": { "label": "Next.js", "onAutoForward": "notify" },
+    "8600": { "label": "FastAPI", "onAutoForward": "notify" },
+    "8610": { "label": "OSS Gateway", "onAutoForward": "notify" },
+    "5600": { "label": "Postgres (主库)", "onAutoForward": "silent" },
+    "5610": { "label": "Postgres (测试库)", "onAutoForward": "silent" },
+    "8630": { "label": "MailHog SMTP", "onAutoForward": "silent" },
+    "8650": { "label": "MailHog UI", "onAutoForward": "silent" }
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "customizations": {

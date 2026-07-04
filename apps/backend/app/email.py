@@ -39,3 +39,20 @@ async def send_reset_password_email(user: User, token: str):
 
     fm = FastMail(conf)
     await fm.send_message(message, template_name="password_reset.html")
+
+
+async def send_verification_code_email(email: str, code: str, scene: str):
+    conf = get_email_config()
+    subject_map = {
+        "register": "传声筒 - 注册验证码",
+        "reset_password": "传声筒 - 密码重置验证码",
+    }
+    message = MessageSchema(
+        subject=subject_map.get(scene, "传声筒 - 验证码"),
+        recipients=[email],
+        template_body={"code": code},
+        subtype=MessageType.html,
+    )
+
+    fm = FastMail(conf)
+    await fm.send_message(message, template_name="verification_code.html")

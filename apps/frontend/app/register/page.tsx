@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRef, useActionState } from "react";
 import {
   Card,
   CardContent,
@@ -9,69 +11,62 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-import { register } from "@/components/actions/register-action";
-import { useActionState } from "react";
+import {
+  registerWithVerificationCode,
+  sendRegisterEmailCode,
+} from "@/components/actions/auth-ext-action";
 import { SubmitButton } from "@/components/ui/submitButton";
-import Link from "next/link";
 import { FieldError, FormError } from "@/components/ui/FormError";
+import { SendCodeButton } from "@/components/auth/send-code-button";
 
-export default function Page() {
-  const [state, dispatch] = useActionState(register, undefined);
+export default function RegisterPage() {
+  const [state, dispatch] = useActionState(
+    registerWithVerificationCode,
+    undefined,
+  );
+  const emailRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="flex h-screen w-full items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <form action={dispatch}>
-        <Card className="w-full max-w-sm rounded-lg shadow-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <Card className="w-full max-w-sm rounded-lg shadow-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 md:min-w-[450px]">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-semibold text-gray-800 dark:text-white">
-              Sign Up
-            </CardTitle>
-            <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
-              Enter your email and password below to create your account.
+            <CardTitle className="text-2xl font-semibold">传声筒 · 注册</CardTitle>
+            <CardDescription>
+              输入邮箱、密码并完成验证码验证
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-6 p-6">
-            <div className="grid gap-3">
-              <Label
-                htmlFor="email"
-                className="text-gray-700 dark:text-gray-300"
-              >
-                Email
-              </Label>
+          <CardContent className="grid gap-4 p-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email">邮箱</Label>
               <Input
                 id="email"
                 name="email"
+                ref={emailRef}
                 type="email"
-                placeholder="m@example.com"
+                placeholder="user@example.com"
                 required
-                className="border-gray-300 dark:border-gray-600"
               />
               <FieldError state={state} field="email" />
             </div>
-            <div className="grid gap-3">
-              <Label
-                htmlFor="password"
-                className="text-gray-700 dark:text-gray-300"
-              >
-                Password
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="border-gray-300 dark:border-gray-600"
-              />
+            <SendCodeButton
+              getValue={() => emailRef.current?.value ?? ""}
+              onSend={(email) => sendRegisterEmailCode(email)}
+            />
+            <div className="grid gap-2">
+              <Label htmlFor="code">验证码</Label>
+              <Input id="code" name="code" placeholder="6 位验证码" required />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">密码</Label>
+              <Input id="password" name="password" type="password" required />
               <FieldError state={state} field="password" />
             </div>
-            <SubmitButton text="Sign Up" />
+            <SubmitButton text="注册" />
             <FormError state={state} />
-            <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-              <Link
-                href="/login"
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500"
-              >
-                Back to login
+            <div className="text-center text-sm">
+              <Link href="/login" className="text-blue-500">
+                返回登录
               </Link>
             </div>
           </CardContent>

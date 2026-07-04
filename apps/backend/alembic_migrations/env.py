@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from app.model.base_model import Base
+from app.model.sms_model import SmsMessage  # noqa: F401
 from dotenv import load_dotenv
 
 load_dotenv()

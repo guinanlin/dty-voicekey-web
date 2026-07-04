@@ -17,7 +17,10 @@ class Settings(BaseSettings):
     RESET_PASSWORD_SECRET_KEY: str
     VERIFICATION_SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_SECONDS: int = 3600
+    ACCESS_TOKEN_EXPIRE_SECONDS: int = 7200
+
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379/0"
 
     # Email
     MAIL_USERNAME: str | None = None
@@ -33,14 +36,19 @@ class Settings(BaseSettings):
     TEMPLATE_DIR: str = "email_templates"
 
     # Frontend
-    FRONTEND_URL: str = "http://localhost:3000"
+    FRONTEND_URL: str = "http://localhost:3600"
 
     # CORS
     CORS_ORIGINS: Set[str]
 
     # OSS Gateway (storage calls go through gateway, not vendor SDKs)
-    OSS_GATEWAY_BASE_URL: str = "http://localhost:8020"
+    OSS_GATEWAY_BASE_URL: str = "http://localhost:8610"
     OSS_GATEWAY_SERVICE_TOKEN: str = "dev-service-token-change-in-production"
+
+    # SMS Forward Webhook (Android device inbound)
+    SMS_FORWARD_REQUIRE_API_KEY: bool = True
+    SMS_FORWARD_DEFAULT_USER_EMAIL: str = "admin@dty.com"
+    SMS_FORWARD_DEFAULT_API_KEY: str = "dev-sms-forward-key-change-in-production"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"

@@ -9,5 +9,5 @@ if [ -f /.dockerenv ]; then
   uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config=app/core/log_config.yml --reload
 else
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running locally with uv"
-  uv run uvicorn app.main:app --host 0.0.0.0 --port 8020 --log-config=app/core/log_config.yml --reload
+  uv run uvicorn app.main:app --host 0.0.0.0 --port 8610 --log-config=app/core/log_config.yml --reload
 fi

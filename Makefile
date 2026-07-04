@@ -19,10 +19,10 @@ help:
 	@echo "Dependencies"
 	@echo "  sync-deps     Install uv + bun dependencies (repo root)"
 	@echo ""
-	@echo "Local dev"
-	@echo "  start-backend            Start FastAPI with hot reload  (:9210)"
-	@echo "  start-backend-oss-gateway Start OSS Gateway with hot reload (:8020)"
-	@echo "  start-frontend           Start Next.js with hot reload (:3000)"
+	@echo "Local dev (宿主机直接跑，勿与 make dc 同时使用)"
+	@echo "  start-backend            Start FastAPI with hot reload  (:8600)"
+	@echo "  start-backend-oss-gateway Start OSS Gateway with hot reload (:8610)"
+	@echo "  start-frontend           Start Next.js with hot reload (:3600)"
 	@echo "  test-backend             Run backend tests (pytest)"
 	@echo "  test-backend-oss-gateway Run OSS gateway tests (pytest)"
 	@echo "  seed-admin               Create admin user locally"
@@ -76,13 +76,16 @@ test-frontend:
 	cd $(FRONTEND_DIR) && bun run test
 
 # Dev Container
-.PHONY: dc dcu dcd dcs dc-logs dc-sh dc-migrate dc-migrate-oss dc-seed dc-deps dc-rebuild dc-env dc-images dc-status
+.PHONY: dc dcu dcd dcs dc-logs dc-sh dc-migrate dc-migrate-oss dc-seed dc-deps dc-rebuild dc-env dc-images dc-status dc-prestart
 
 dc-env:
 	bash scripts/devcontainer-resolve-ports.sh
 
 dc-images:
 	bash scripts/devcontainer-ensure-images.sh
+
+dc-prestart:
+	bash scripts/devcontainer-prestart.sh
 
 dc: dc-env
 	bash scripts/devcontainer-up.sh

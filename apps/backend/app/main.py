@@ -5,6 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from .utils import simple_generate_unique_route_id
 from app.routes.items import router as items_router
 from app.routes.files import router as files_router
+from app.routes.auth_ext import router as auth_ext_router
+from app.routes.sms import router as sms_router
+from app.routes.sms_inbound import router as sms_inbound_router
 from app.core.config import settings
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 
@@ -56,6 +59,15 @@ app.include_router(items_router, prefix="/items")
 
 # File upload (orchestrates OSS Gateway internally)
 app.include_router(files_router, prefix="/files")
+
+# Auth extensions (verification codes, phone login)
+app.include_router(auth_ext_router, prefix="/auth")
+
+# SMS management
+app.include_router(sms_router, prefix="/sms")
+
+# SMS Forward Webhook (Android device)
+app.include_router(sms_inbound_router, prefix="/v1/sms")
 
 
 # 自定义 Swagger UI 端点

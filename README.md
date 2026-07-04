@@ -43,10 +43,10 @@ make dc              # 启动 DB + MailHog + backend + oss gateway + frontend
 make dc-migrate      # 主 backend 数据库迁移
 make dc-migrate-oss  # OSS Gateway 数据库迁移（oss_* 表）
 make dc-seed         # 种子管理员 admin@dty.com / admin123
-# 浏览器打开 http://localhost:3010/dashboard 可体验文件上传 Demo
+# 浏览器打开 http://localhost:3600/dashboard 可体验文件上传 Demo
 ```
 
-宿主机默认端口见 `.devcontainer/.env`（一般为 Next.js `3010`、FastAPI `8010`、OSS Gateway `8020`、MailHog `8025`）。
+宿主机默认端口见 `.devcontainer/.env`（一般为 Next.js `3600`、FastAPI `8600`、OSS Gateway `8610`、MailHog UI `8650`）。
 
 ### 方式二：本地开发
 
@@ -123,9 +123,9 @@ make dc-sh           # 进入 workspace shell
 
 | 服务 | 职责 | 默认端口（Dev Container） |
 |------|------|---------------------------|
-| `apps/frontend` | UI、Server Action，只调 Core | 3010 |
-| `apps/backend` | 认证、业务 API、存储编排 | 8010 |
-| `apps/backend_oss_gateway` | 对象存储 API、Provider、`oss_*` 元数据 | 8020 |
+| `apps/frontend` | UI、Server Action，只调 Core | 3600 |
+| `apps/backend` | 认证、业务 API、存储编排 | 8600 |
+| `apps/backend_oss_gateway` | 对象存储 API、Provider、`oss_*` 元数据 | 8610 |
 
 ### 双后端数据库边界
 
@@ -147,7 +147,7 @@ make dc-migrate-oss  # oss_* 表
 
 ### 文件上传 Demo
 
-登录 Dashboard（`http://localhost:3010/dashboard`，种子用户 `admin@dty.com` / `admin123`）后，页面内有 **「文件上传 Demo」** 区块，可走通完整链路。
+登录 Dashboard（`http://localhost:3600/dashboard`，种子用户 `admin@dty.com` / `admin123`）后，页面内有 **「文件上传 Demo」** 区块，可走通完整链路。
 
 Dev Container 默认使用 **Local Provider**（文件落在 `apps/backend_oss_gateway/storage/`），无需配置云密钥。
 
@@ -167,7 +167,7 @@ Dev Container 默认使用 **Local Provider**（文件落在 `apps/backend_oss_g
 **Core Backend**（`apps/backend/.env`）：
 
 ```env
-OSS_GATEWAY_BASE_URL=http://localhost:8020
+OSS_GATEWAY_BASE_URL=http://localhost:8610
 OSS_GATEWAY_SERVICE_TOKEN=dev-service-token-change-in-production
 ```
 
@@ -177,7 +177,7 @@ OSS_GATEWAY_SERVICE_TOKEN=dev-service-token-change-in-production
 SERVICE_TOKENS=dev-service-token-change-in-production   # 与 Core 的 TOKEN 一致
 DEFAULT_PROVIDER=local                                  # 本地开发默认 local
 LOCAL_STORAGE_PATH=./storage
-LOCAL_PUBLIC_BASE_URL=http://localhost:8020             # 浏览器下载链接前缀
+LOCAL_PUBLIC_BASE_URL=http://localhost:8610             # 浏览器下载链接前缀
 ```
 
 生产环境将 `DEFAULT_PROVIDER` 改为 `s3` 或 `oss`，并填写对应云厂商密钥（见 `apps/backend_oss_gateway/.env.example`）。

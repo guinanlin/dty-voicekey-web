@@ -43,11 +43,11 @@ GRANT ALL PRIVILEGES ON DATABASE lechongtest TO lechongtestuser;
 ```
 *# Local database*
 
-DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/mydatabase
+DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5600/mydatabase
 
 *# Test database*
 
-TEST_DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5433/testdatabase
+TEST_DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5610/testdatabase
 
 
 ```

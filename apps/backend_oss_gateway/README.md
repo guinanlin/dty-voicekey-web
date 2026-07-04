@@ -30,7 +30,7 @@ make dc-migrate-oss      # OSS 网关数据库迁移
 make dc-status           # 查看各服务状态
 ```
 
-- OSS Gateway: `http://localhost:${BACKEND_OSS_GATEWAY_PORT}/docs`（默认 8020）
+- OSS Gateway: `http://localhost:${BACKEND_OSS_GATEWAY_PORT}/docs`（默认 8610）
 - 主 Backend: `http://localhost:${BACKEND_PORT}/docs`
 
 ## Phase 路线图

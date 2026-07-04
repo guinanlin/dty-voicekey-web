@@ -74,7 +74,7 @@ cp apps/backend/.env.example apps/backend/.env
 cp apps/frontend/.env.example apps/frontend/.env.local
 ```
 
-通常保持 `API_BASE_URL=http://localhost:8000` 即可。
+通常保持 `API_BASE_URL=http://localhost:8600` 即可。
 
 ### 3. 启动数据库并迁移
 
@@ -95,8 +95,9 @@ make seed-admin
 两个终端分别执行：
 
 ```bash
-make start-backend   # http://localhost:8000 ，API 文档 /docs
-make start-frontend  # http://localhost:3000
+make start-backend   # http://localhost:8600 ，API 文档 /docs
+make start-backend-oss-gateway  # http://localhost:8610
+make start-frontend  # http://localhost:3600
 ```
 
 ## 日常开发
@@ -163,12 +164,13 @@ make dcd         # 停止并清理
 
 | 服务 | 默认端口 |
 |------|----------|
-| Next.js | 3010 |
-| FastAPI | 8010 |
-| OSS Gateway | 8020 |
-| Postgres（主库） | 5442 |
-| Postgres（测试库） | 5443 |
-| MailHog UI | 8025 |
+| Next.js | 3600 |
+| FastAPI | 8600 |
+| OSS Gateway | 8610 |
+| Postgres（主库） | 5600 |
+| Postgres（测试库） | 5610 |
+| MailHog SMTP | 8630 |
+| MailHog UI | 8650 |
 
 容器内前端访问后端使用 `http://backend:8000`；浏览器访问使用转发后的 localhost 端口。
 

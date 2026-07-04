@@ -10,6 +10,8 @@ bash "$ROOT/scripts/devcontainer-resolve-ports.sh"
 # shellcheck source=/dev/null
 source "$ENV_FILE"
 
+bash "$ROOT/scripts/devcontainer-prestart.sh"
+
 COMPOSE=(docker compose --env-file "$ENV_FILE" -f "$ROOT/.devcontainer/docker-compose.yml")
 
 echo "🔨 构建 DevContainer 工作区镜像..."
@@ -49,15 +51,18 @@ fi
 echo "⏳ 等待 FastAPI / OSS Gateway / Next.js 就绪..."
 for i in $(seq 1 120); do
   api_code="$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${BACKEND_PORT}/docs" 2>/dev/null || true)"
-  oss_code="$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${BACKEND_OSS_GATEWAY_PORT:-8020}/api/v1/health" 2>/dev/null || true)"
+  oss_code="$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${BACKEND_OSS_GATEWAY_PORT:-8610}/api/v1/health" 2>/dev/null || true)"
   web_code="$(curl --noproxy '*' -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${FRONTEND_PORT}/" 2>/dev/null || true)"
+  if [[ "$i" == "1" || $((i % 5)) -eq 0 ]]; then
+    echo "  [${i}/120] backend=${api_code:-?} oss=${oss_code:-?} frontend=${web_code:-?}"
+  fi
   if [[ "$api_code" == "200" && "$oss_code" == "200" && "$web_code" =~ ^(200|307|308)$ ]]; then
     echo "✅ DevContainer 已就绪（尝试 ${i}/120）"
     echo ""
     echo "  前端:         http://localhost:${FRONTEND_PORT}"
     echo "  后端:         http://localhost:${BACKEND_PORT}/docs"
-    echo "  OSS Gateway:  http://localhost:${BACKEND_OSS_GATEWAY_PORT:-8020}/docs"
-    echo "  MailHog:      http://localhost:8025"
+    echo "  OSS Gateway:  http://localhost:${BACKEND_OSS_GATEWAY_PORT:-8610}/docs"
+    echo "  MailHog:      http://localhost:${MAILHOG_UI_PORT:-8650}"
     echo ""
     echo "  初始 admin: admin@dty.com / admin123"
     echo "  端口配置: ${ENV_FILE}"
@@ -70,6 +75,13 @@ for i in $(seq 1 120); do
 done
 
 echo "❌ 启动超时：FastAPI=${api_code:-unknown} OSS=${oss_code:-unknown} Next.js=${web_code:-unknown}"
+if [[ "${web_code:-000}" == "000" ]]; then
+  echo ""
+  echo "💡 前端未就绪常见原因："
+  echo "  1. 宿主机仍在运行 next dev（请停止 make start-frontend / bun run dev）"
+  echo "  2. 共享 .next/dev/lock 冲突 → 可执行: bash scripts/devcontainer-prestart.sh && docker restart dty-app-dev-frontend-1"
+  echo "  3. 查看日志: make dc-logs s=frontend"
+fi
 echo "---- docker compose ps ----"
 "${COMPOSE[@]}" ps || true
 echo "---- recent logs ----"
