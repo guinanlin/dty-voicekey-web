@@ -20,20 +20,32 @@ type Props = {
   actions?: ReactNode;
 };
 
+const SHANGHAI_TZ = "Asia/Shanghai";
+
+/** 上海时区日历日期 YYYY-MM-DD，SSR 与浏览器结果一致 */
+function shanghaiDateKey(iso: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: SHANGHAI_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(iso));
+}
+
 function dateLabel(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const diff = today.getTime() - target.getTime();
-  if (diff === 0) return "今天";
-  if (diff === 86400000) return "昨天";
-  return date.toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" });
+  const targetKey = shanghaiDateKey(iso);
+  const todayKey = shanghaiDateKey(new Date().toISOString());
+  if (targetKey === todayKey) return "今天";
+  const yesterdayKey = shanghaiDateKey(
+    new Date(Date.now() - 86400000).toISOString(),
+  );
+  if (targetKey === yesterdayKey) return "昨天";
+  return new Date(iso).toLocaleDateString("zh-CN", { timeZone: SHANGHAI_TZ });
 }
 
 function timeOnly(iso: string): string {
   return new Date(iso).toLocaleTimeString("zh-CN", {
-    timeZone: "Asia/Shanghai",
+    timeZone: SHANGHAI_TZ,
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
