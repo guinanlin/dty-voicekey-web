@@ -1,0 +1,40 @@
+# Git / IDE
+.git
+.github
+.cursor
+.devcontainer
+**/.vscode
+**/.idea
+
+# Python
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+apps/backend/.venv-test
+
+# Node / Bun
+**/node_modules
+**/.next
+**/.turbo
+**/coverage
+
+# Env & secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Docs / misc
+**/*.md
+!apps/backend/README.md
+!apps/frontend/README.md
+shared-data
+scripts/smoke-test.sh
+scripts/ci-check.sh
+docs/
+agent-transcripts/
+# docker/ 目录仅存放 Dockerfile 与 compose，不参与 COPY 上下文
+docker/docker-compose.yml
+docker/.pre-commit-config.docker.yaml
