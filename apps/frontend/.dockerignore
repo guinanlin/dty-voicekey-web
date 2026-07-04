@@ -1,0 +1,8 @@
+node_modules
+.next
+coverage
+.turbo
+.env
+.env.*
+!.env.example
+__tests__

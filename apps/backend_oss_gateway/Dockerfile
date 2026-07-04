@@ -1,10 +1,10 @@
-# 传声筒 - FastAPI 后端（生产）
+# 传声筒 - OSS Gateway（生产）
 #
 # 阿里云 ACR：
-#   构建上下文目录: /apps/backend
+#   构建上下文目录: /apps/backend_oss_gateway
 #   Dockerfile 文件名: Dockerfile
 #
-# 本地：docker build -t dty-backend:local .
+# 本地：docker build -t dty-oss:local .
 
 FROM python:3.12-slim-bookworm
 
@@ -26,7 +26,8 @@ ENV PATH="/app/.venv/bin:$PATH" \
   PYTHONUNBUFFERED=1 \
   PORT=8000
 
-RUN chmod +x docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh \
+  && mkdir -p storage
 
 EXPOSE 8000
 
