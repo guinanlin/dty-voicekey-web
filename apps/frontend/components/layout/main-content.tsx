@@ -13,9 +13,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={
-        fullWidth
-          ? "flex h-full min-h-0 w-full flex-col"
-          : "mx-auto max-w-5xl"
+        fullWidth ? "flex h-full min-h-0 w-full flex-col" : "mx-auto max-w-5xl"
       }
     >
       {children}

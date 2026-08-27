@@ -7,7 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.model.relay_model import RelayPair, utcnow
-from app.schemas import RelayPairCreateResponse, RelayPairRefreshResponse, RelayQrPayload
+from app.schemas import (
+    RelayPairCreateResponse,
+    RelayPairRefreshResponse,
+    RelayQrPayload,
+)
 from app.service.relay_token import (
     generate_agent_token,
     generate_pair_id,
@@ -136,7 +140,9 @@ def build_create_response(
     )
 
 
-def build_refresh_response(pair: RelayPair, pair_token: str) -> RelayPairRefreshResponse:
+def build_refresh_response(
+    pair: RelayPair, pair_token: str
+) -> RelayPairRefreshResponse:
     return RelayPairRefreshResponse(
         pair_token=pair_token,
         expires_at=pair.expires_at,

@@ -17,7 +17,10 @@ const API_BASE = process.env.API_BASE_URL ?? "http://localhost:8600";
 async function authHeaders() {
   const token = (await cookies()).get("accessToken")?.value;
   if (!token) return null;
-  return { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
 }
 
 async function relayFetch<T>(
@@ -90,11 +93,14 @@ export async function refreshRelayPairToken(pairId: string) {
   const headers = await authHeaders();
   if (!headers) return { error: "未登录" as const };
 
-  const response = await fetch(`${API_BASE}/api/v1/pairs/${pairId}/refresh-token`, {
-    method: "POST",
-    headers,
-    cache: "no-store",
-  });
+  const response = await fetch(
+    `${API_BASE}/api/v1/pairs/${pairId}/refresh-token`,
+    {
+      method: "POST",
+      headers,
+      cache: "no-store",
+    },
+  );
 
   if (!response.ok) return { error: "刷新令牌失败" as const };
   const data = (await response.json()) as RelayPairRefreshResponse;

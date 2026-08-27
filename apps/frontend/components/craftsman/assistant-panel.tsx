@@ -39,7 +39,10 @@ export function AssistantPanel({ selected, onDeleted }: Props) {
   if (!selected) {
     return (
       <div className="flex h-full flex-col items-center justify-center bg-muted/10">
-        <Bot className="mb-3 h-10 w-10 text-muted-foreground/40" strokeWidth={1.5} />
+        <Bot
+          className="mb-3 h-10 w-10 text-muted-foreground/40"
+          strokeWidth={1.5}
+        />
         <p className="text-sm text-muted-foreground">选择一条消息</p>
       </div>
     );

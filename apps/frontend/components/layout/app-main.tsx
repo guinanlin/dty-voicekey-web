@@ -13,9 +13,7 @@ export function AppMain({ children }: { children: React.ReactNode }) {
     <main
       className={cn(
         "flex-1 min-h-0",
-        isCraftsman
-          ? "flex flex-col overflow-hidden"
-          : "overflow-y-auto p-6",
+        isCraftsman ? "flex flex-col overflow-hidden" : "overflow-y-auto p-6",
       )}
     >
       <MainContent>{children}</MainContent>

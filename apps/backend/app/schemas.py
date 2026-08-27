@@ -270,4 +270,3 @@ class RelayMessageStatsResponse(BaseModel):
     today: int
     delivered: int
     pc_offline: int
-

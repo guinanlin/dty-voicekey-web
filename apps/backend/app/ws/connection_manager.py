@@ -80,7 +80,9 @@ class RelayConnectionManager:
             and channel.agent_ws.client_state == WebSocketState.CONNECTED
         )
 
-    async def bind_agent(self, pair_id: str, user_id: UUID, ws: WebSocket) -> PairChannel:
+    async def bind_agent(
+        self, pair_id: str, user_id: UUID, ws: WebSocket
+    ) -> PairChannel:
         channel = await self.get_or_create_channel(pair_id, user_id)
         async with self._lock:
             channel.agent_ws = ws
@@ -94,7 +96,9 @@ class RelayConnectionManager:
         async with self._lock:
             channel.agent_ws = None
 
-    async def add_phone(self, pair_id: str, user_id: UUID, ws: WebSocket) -> PairChannel:
+    async def add_phone(
+        self, pair_id: str, user_id: UUID, ws: WebSocket
+    ) -> PairChannel:
         channel = await self.get_or_create_channel(pair_id, user_id)
         async with self._lock:
             channel.phone_sockets.add(ws)
@@ -118,7 +122,9 @@ class RelayConnectionManager:
         async with self._lock:
             self._channels.pop(pair_id, None)
 
-    async def broadcast_to_phones(self, channel: PairChannel, payload: dict[str, Any]) -> None:
+    async def broadcast_to_phones(
+        self, channel: PairChannel, payload: dict[str, Any]
+    ) -> None:
         text = json.dumps(payload, ensure_ascii=False)
         dead: list[WebSocket] = []
         for phone in list(channel.phone_sockets):

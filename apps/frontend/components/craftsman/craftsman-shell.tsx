@@ -9,7 +9,10 @@ import type {
   RelayPairCreateResponse,
   RelayPairRead,
 } from "@/lib/relay-types";
-import { fetchRelayMessages, refreshCraftsmanData } from "@/components/actions/craftsman-action";
+import {
+  fetchRelayMessages,
+  refreshCraftsmanData,
+} from "@/components/actions/craftsman-action";
 import { HistoryPanel } from "@/components/craftsman/history-panel";
 import { AssistantPanel } from "@/components/craftsman/assistant-panel";
 import { PairDialog } from "@/components/craftsman/pair-dialog";
@@ -97,20 +100,17 @@ export function CraftsmanShell({
     onMessageUpdated: handleMessageUpdated,
   });
 
-  const loadMessages = useCallback(
-    (s: string, order: "newest" | "oldest") => {
-      startTransition(async () => {
-        const result = await fetchRelayMessages({
-          page: 1,
-          page_size: 100,
-          search: s || undefined,
-          sort: order,
-        });
-        if (result) setMessages(result);
+  const loadMessages = useCallback((s: string, order: "newest" | "oldest") => {
+    startTransition(async () => {
+      const result = await fetchRelayMessages({
+        page: 1,
+        page_size: 100,
+        search: s || undefined,
+        sort: order,
       });
-    },
-    [],
-  );
+      if (result) setMessages(result);
+    });
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => loadMessages(search, sort), 300);

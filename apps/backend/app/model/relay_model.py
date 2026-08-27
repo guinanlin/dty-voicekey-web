@@ -51,6 +51,8 @@ class RelayMessage(Base):
     ack_error = Column(String(512), nullable=True)
     client_ip = Column(String(64), nullable=True)
     deleted = Column(Boolean, nullable=False, default=False, index=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, index=True)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, default=utcnow, index=True
+    )
 
     user = relationship("User", back_populates="relay_messages")

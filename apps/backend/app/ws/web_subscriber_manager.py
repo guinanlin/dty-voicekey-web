@@ -27,7 +27,9 @@ class WebSubscriberManager:
         if not sockets:
             self._subscribers.pop(user_id, None)
 
-    async def publish(self, user_id: UUID, event_type: str, message: dict[str, Any]) -> None:
+    async def publish(
+        self, user_id: UUID, event_type: str, message: dict[str, Any]
+    ) -> None:
         sockets = list(self._subscribers.get(user_id, set()))
         if not sockets:
             return

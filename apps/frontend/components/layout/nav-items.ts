@@ -1,4 +1,9 @@
-import { LayoutDashboard, MessageSquare, FlaskConical, Hammer } from "lucide-react";
+import {
+  LayoutDashboard,
+  MessageSquare,
+  FlaskConical,
+  Hammer,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type NavItem = {

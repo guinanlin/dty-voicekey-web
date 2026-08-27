@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -48,9 +48,7 @@ async def update_relay_message_ack(
     ack_ok: bool,
     ack_error: str | None = None,
 ) -> None:
-    result = await db.execute(
-        select(RelayMessage).where(RelayMessage.id == message_id)
-    )
+    result = await db.execute(select(RelayMessage).where(RelayMessage.id == message_id))
     message = result.scalar_one_or_none()
     if message is None:
         return
@@ -137,12 +135,16 @@ async def get_relay_message_stats(db: AsyncSession, user_id: UUID) -> dict[str, 
     ).scalar_one()
     delivered = (
         await db.execute(
-            select(func.count()).where(*base, RelayMessage.delivery_status == "delivered")
+            select(func.count()).where(
+                *base, RelayMessage.delivery_status == "delivered"
+            )
         )
     ).scalar_one()
     pc_offline = (
         await db.execute(
-            select(func.count()).where(*base, RelayMessage.delivery_status == "pc_offline")
+            select(func.count()).where(
+                *base, RelayMessage.delivery_status == "pc_offline"
+            )
         )
     ).scalar_one()
 

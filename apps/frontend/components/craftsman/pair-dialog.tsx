@@ -2,12 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Copy, Link2, Loader2, RefreshCw, Trash2, X, Circle } from "lucide-react";
+import {
+  Copy,
+  Link2,
+  Loader2,
+  RefreshCw,
+  Trash2,
+  X,
+  Circle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type {
-  RelayPairCreateResponse,
-  RelayPairRead,
-} from "@/lib/relay-types";
+import type { RelayPairCreateResponse, RelayPairRead } from "@/lib/relay-types";
 import {
   createRelayPair,
   refreshRelayPairToken,
@@ -226,7 +231,9 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
                 <span
                   className={cn(
                     "ml-auto mr-8 h-2 w-2 rounded-full",
-                    activePair.pc_online ? "bg-green-500" : "bg-muted-foreground/30",
+                    activePair.pc_online
+                      ? "bg-green-500"
+                      : "bg-muted-foreground/30",
                   )}
                   title={activePair.pc_online ? "PC 在线" : "PC 离线"}
                 />
@@ -296,7 +303,11 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
             ) : (
               <div className="flex flex-col items-center gap-3 py-6">
                 <p className="text-sm text-muted-foreground">加载失败</p>
-                <Button size="sm" variant="outline" onClick={handleRefreshToken}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleRefreshToken}
+                >
                   <RefreshCw className="h-3.5 w-3.5" />
                 </Button>
               </div>

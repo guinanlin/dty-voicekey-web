@@ -53,9 +53,7 @@ async def test_pair_status_and_revoke(test_client: AsyncClient, authenticated_us
     assert status_resp.status_code == 200
     assert status_resp.json()["pc_online"] is False
 
-    delete_resp = await test_client.delete(
-        f"/api/v1/pairs/{pair_id}", headers=headers
-    )
+    delete_resp = await test_client.delete(f"/api/v1/pairs/{pair_id}", headers=headers)
     assert delete_resp.status_code == 204
 
     list_resp = await test_client.get("/api/v1/pairs", headers=headers)

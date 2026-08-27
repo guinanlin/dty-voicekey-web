@@ -10,8 +10,14 @@ from sqlalchemy import select
 from app.core.config import settings
 from app.core.database import async_session_maker
 from app.model.relay_model import RelayPair, utcnow
-from app.service.relay_message_service import create_relay_message, update_relay_message_ack
-from app.service.relay_notify import notify_message_created, notify_message_updated_by_id
+from app.service.relay_message_service import (
+    create_relay_message,
+    update_relay_message_ack,
+)
+from app.service.relay_notify import (
+    notify_message_created,
+    notify_message_updated_by_id,
+)
 from app.service.relay_token import hash_token, verify_token
 from app.service.verification_service import check_rate_limit
 from app.ws.connection_manager import relay_manager
@@ -38,7 +44,9 @@ async def _load_pair_by_token(db, pair_token: str) -> RelayPair | None:
     return result.scalar_one_or_none()
 
 
-async def _load_pair_by_id_and_agent(db, pair_id: str, agent_token: str) -> RelayPair | None:
+async def _load_pair_by_id_and_agent(
+    db, pair_id: str, agent_token: str
+) -> RelayPair | None:
     result = await db.execute(select(RelayPair).where(RelayPair.pair_id == pair_id))
     pair = result.scalar_one_or_none()
     if pair is None:
@@ -135,7 +143,9 @@ async def phone_ws(websocket: WebSocket, pair: str = Query(...)):
 
                 channel = await relay_manager.get_channel(pair_id)
                 if channel is None:
-                    channel = await relay_manager.get_or_create_channel(pair_id, user_id)
+                    channel = await relay_manager.get_or_create_channel(
+                        pair_id, user_id
+                    )
 
                 if not relay_manager.is_agent_online(channel):
                     offline_message = await create_relay_message(
