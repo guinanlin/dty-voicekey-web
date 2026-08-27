@@ -163,7 +163,6 @@ services:
       CHOKIDAR_USEPOLLING: "true"
       WATCHPACK_POLLING: "true"
       API_BASE_URL: http://backend:8000
-      NEXT_PUBLIC_RELAY_WS_URL: ws://localhost:${BACKEND_PORT:-8601}/relay/ws
       OPENAPI_OUTPUT_FILE: /workspaces/nextjs-fastapi-template/shared-data/openapi.json
     volumes:
       - ..:/workspaces/nextjs-fastapi-template:cached

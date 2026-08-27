@@ -32,9 +32,14 @@ ENV NODE_ENV=production \
 COPY --from=builder --chown=bun:bun /app/public ./public
 COPY --from=builder --chown=bun:bun /app/.next/standalone ./
 COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
+COPY --from=builder --chown=bun:bun /app/server.ts ./server.ts
+COPY --from=builder --chown=bun:bun /app/node_modules/http-proxy ./node_modules/http-proxy
+COPY --from=builder --chown=bun:bun /app/node_modules/eventemitter3 ./node_modules/eventemitter3
+COPY --from=builder --chown=bun:bun /app/node_modules/follow-redirects ./node_modules/follow-redirects
+COPY --from=builder --chown=bun:bun /app/node_modules/requires-port ./node_modules/requires-port
 
 USER bun
 
 EXPOSE 3000
 
-CMD ["bun", "server.js"]
+CMD ["bun", "server.ts"]

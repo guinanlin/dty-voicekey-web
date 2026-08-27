@@ -1,0 +1,51 @@
+{
+  "code": "dty-voicekey-web",
+  "name": "dty-voicekey-web",
+  "shortName": "dty-voicekey-web",
+  "description": "全栈模板：FastAPI 后端 + Next.js 前端 + OSS Gateway 对象存储网关（DevContainer 编排）",
+  "github": "https://github.com/guinanlin/dty-voicekey-web.git",
+  "actions": [
+    {
+      "id": "dev-start",
+      "label": "启动开发环境",
+      "command": "make dc",
+      "url": "",
+      "showLogs": true
+    },
+    {
+      "id": "dev-stop",
+      "label": "关闭开发环境",
+      "command": "make dcs",
+      "url": "",
+      "showLogs": false
+    },
+    {
+      "id": "prod-start",
+      "label": "启动生产环境",
+      "command": "make dc",
+      "url": "",
+      "showLogs": false
+    },
+    {
+      "id": "prod-stop",
+      "label": "关闭生产环境",
+      "command": "make dcd",
+      "url": "",
+      "showLogs": false
+    },
+    {
+      "id": "install",
+      "label": "安装",
+      "command": "make sync-deps",
+      "url": "",
+      "showLogs": true
+    },
+    {
+      "id": "uninstall",
+      "label": "卸载",
+      "command": "make dcd",
+      "url": "",
+      "showLogs": false
+    }
+  ]
+}

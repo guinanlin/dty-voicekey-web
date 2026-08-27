@@ -101,6 +101,8 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
 
   useEffect(() => {
     loadStartedRef.current = null;
+    // This effect intentionally synchronizes component state from localStorage.
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (!activePairId) {
       setLatestPair(null);
       return;
@@ -111,6 +113,7 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
         prev?.qr_payload?.pair === stored.qr_payload.pair ? prev : stored,
       );
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [activePairId]);
 
   const handleCreate = async () => {

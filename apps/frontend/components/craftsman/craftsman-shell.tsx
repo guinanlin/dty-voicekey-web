@@ -30,14 +30,12 @@ type Props = {
   initialMessages: RelayMessageListResponse;
   initialPairs: RelayPairRead[];
   accessToken: string;
-  relayEventsWsUrl: string;
 };
 
 export function CraftsmanShell({
   initialMessages,
   initialPairs,
   accessToken,
-  relayEventsWsUrl,
 }: Props) {
   const [messages, setMessages] = useState(initialMessages);
   const [pairs, setPairs] = useState(initialPairs);
@@ -49,8 +47,10 @@ export function CraftsmanShell({
   const searchRef = useRef(search);
   const sortRef = useRef(sort);
 
-  searchRef.current = search;
-  sortRef.current = sort;
+  useEffect(() => {
+    searchRef.current = search;
+    sortRef.current = sort;
+  }, [search, sort]);
 
   const handleMessageNew = useCallback((message: RelayMessageRead) => {
     setMessages((prev) => {
@@ -92,7 +92,7 @@ export function CraftsmanShell({
     setSelected((current) => (current?.id === message.id ? message : current));
   }, []);
 
-  useRelayEvents(accessToken, relayEventsWsUrl, {
+  useRelayEvents(accessToken, {
     onMessageNew: handleMessageNew,
     onMessageUpdated: handleMessageUpdated,
   });

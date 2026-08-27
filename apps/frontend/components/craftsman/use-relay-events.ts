@@ -8,16 +8,15 @@ type RelayEventHandlers = {
   onMessageUpdated: (message: RelayMessageRead) => void;
 };
 
-export function useRelayEvents(
-  token: string,
-  wsUrl: string,
-  handlers: RelayEventHandlers,
-) {
+export function useRelayEvents(token: string, handlers: RelayEventHandlers) {
   const handlersRef = useRef(handlers);
-  handlersRef.current = handlers;
 
   useEffect(() => {
-    if (!token || !wsUrl) return;
+    handlersRef.current = handlers;
+  }, [handlers]);
+
+  useEffect(() => {
+    if (!token) return;
 
     let ws: WebSocket | null = null;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -25,7 +24,11 @@ export function useRelayEvents(
 
     const connect = () => {
       if (closed) return;
-      const url = `${wsUrl}?token=${encodeURIComponent(token)}`;
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const base =
+        process.env.NEXT_PUBLIC_RELAY_WS_URL ||
+        `${protocol}//${window.location.host}/relay/ws`;
+      const url = `${base}?token=${encodeURIComponent(token)}`;
       ws = new WebSocket(url);
 
       ws.onmessage = (event) => {
@@ -58,5 +61,5 @@ export function useRelayEvents(
       if (retryTimer) clearTimeout(retryTimer);
       ws?.close();
     };
-  }, [token, wsUrl]);
+  }, [token]);
 }
