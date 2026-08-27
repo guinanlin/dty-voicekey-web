@@ -44,6 +44,12 @@ function saveStoredPair(data: RelayPairCreateResponse) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function frontendWsOrigin() {
+  if (typeof window === "undefined") return "";
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${protocol}//${window.location.host}`;
+}
+
 export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -52,7 +58,6 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
   const [latestPair, setLatestPair] = useState<RelayPairCreateResponse | null>(
     null,
   );
-  const [frontendWsOrigin, setFrontendWsOrigin] = useState("");
 
   const activePair = pairs[0];
   const activePairId = activePair?.pair_id;
@@ -104,11 +109,6 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
     },
     [fetchQrForPair],
   );
-
-  useEffect(() => {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    setFrontendWsOrigin(`${protocol}//${window.location.host}`);
-  }, []);
 
   useEffect(() => {
     loadStartedRef.current = null;
@@ -167,8 +167,9 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
   const copyUrl = async () => {
     if (!latestPair) return;
     const backendUrl = `${latestPair.qr_payload.ws}?pair=${latestPair.qr_payload.pair}`;
-    const frontendUrl = frontendWsOrigin
-      ? `${frontendWsOrigin}/api/ws?pair=${latestPair.qr_payload.pair}`
+    const origin = frontendWsOrigin();
+    const frontendUrl = origin
+      ? `${origin}/api/ws?pair=${latestPair.qr_payload.pair}`
       : null;
     await navigator.clipboard.writeText(
       frontendUrl ? `${backendUrl}\n${frontendUrl}` : backendUrl,
@@ -187,7 +188,8 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
   };
 
   const displayQr = latestPair?.qr_payload ?? null;
-  const frontendWsBase = frontendWsOrigin ? `${frontendWsOrigin}/api/ws` : null;
+  const origin = frontendWsOrigin();
+  const frontendWsBase = origin ? `${origin}/api/ws` : null;
   const qrForScan =
     displayQr && frontendWsBase
       ? { ...displayQr, ws: frontendWsBase }
