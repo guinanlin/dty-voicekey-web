@@ -1,5 +1,8 @@
 import { createServer } from "node:http";
-import { createServer as createNetServer, connect as netConnect } from "node:net";
+import {
+  createServer as createNetServer,
+  connect as netConnect,
+} from "node:net";
 import type { Duplex } from "node:stream";
 
 import next from "next";
@@ -33,7 +36,9 @@ async function waitForBackend() {
       });
       if (response.ok) {
         backendReady = true;
-        console.log("[ws-proxy] backend healthy, enabling /api/ws and /api/relay/ws");
+        console.log(
+          "[ws-proxy] backend healthy, enabling /api/ws and /api/relay/ws",
+        );
         return;
       }
     } catch {
@@ -56,7 +61,9 @@ const frontendToBackendWsPath: Record<string, string> = {
 function rewriteHandshake(raw: string, backendPath: string) {
   const lines = raw.split("\r\n");
   lines[0] = lines[0].replace(/^GET\s+\S+/, `GET ${backendPath}`);
-  const hostIdx = lines.findIndex((line) => line.toLowerCase().startsWith("host:"));
+  const hostIdx = lines.findIndex((line) =>
+    line.toLowerCase().startsWith("host:"),
+  );
   if (hostIdx >= 0) {
     lines[hostIdx] = `Host: ${backendUrl.hostname}:${backendPort}`;
   }
@@ -80,7 +87,13 @@ function pipeSockets(client: Duplex, upstream: Duplex) {
   client.on("end", () => upstream.end());
 }
 
-function proxyTo(client: Duplex, firstPacket: Buffer, host: string, destPort: number, payload?: string) {
+function proxyTo(
+  client: Duplex,
+  firstPacket: Buffer,
+  host: string,
+  destPort: number,
+  payload?: string,
+) {
   const upstream = netConnect(destPort, host);
   upstream.on("connect", () => {
     upstream.write(payload ?? firstPacket);
