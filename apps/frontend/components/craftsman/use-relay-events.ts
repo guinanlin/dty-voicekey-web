@@ -27,7 +27,7 @@ export function useRelayEvents(token: string, handlers: RelayEventHandlers) {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const base =
         process.env.NEXT_PUBLIC_RELAY_WS_URL ||
-        `${protocol}//${window.location.host}/relay/ws`;
+        `${protocol}//${window.location.host}/api/relay/ws`;
       const url = `${base}?token=${encodeURIComponent(token)}`;
       ws = new WebSocket(url);
 

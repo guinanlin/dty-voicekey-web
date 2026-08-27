@@ -52,6 +52,7 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
   const [latestPair, setLatestPair] = useState<RelayPairCreateResponse | null>(
     null,
   );
+  const [frontendWsOrigin, setFrontendWsOrigin] = useState("");
 
   const activePair = pairs[0];
   const activePairId = activePair?.pair_id;
@@ -103,6 +104,11 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
     },
     [fetchQrForPair],
   );
+
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    setFrontendWsOrigin(`${protocol}//${window.location.host}`);
+  }, []);
 
   useEffect(() => {
     loadStartedRef.current = null;
@@ -160,8 +166,13 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
 
   const copyUrl = async () => {
     if (!latestPair) return;
-    const url = `${latestPair.qr_payload.ws}?pair=${latestPair.qr_payload.pair}`;
-    await navigator.clipboard.writeText(url);
+    const backendUrl = `${latestPair.qr_payload.ws}?pair=${latestPair.qr_payload.pair}`;
+    const frontendUrl = frontendWsOrigin
+      ? `${frontendWsOrigin}/api/ws?pair=${latestPair.qr_payload.pair}`
+      : null;
+    await navigator.clipboard.writeText(
+      frontendUrl ? `${backendUrl}\n${frontendUrl}` : backendUrl,
+    );
     showToast("已复制");
   };
 
@@ -176,7 +187,16 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
   };
 
   const displayQr = latestPair?.qr_payload ?? null;
+  const frontendWsBase = frontendWsOrigin ? `${frontendWsOrigin}/api/ws` : null;
+  const qrForScan =
+    displayQr && frontendWsBase
+      ? { ...displayQr, ws: frontendWsBase }
+      : displayQr;
   const wsUrl = displayQr ? `${displayQr.ws}?pair=${displayQr.pair}` : null;
+  const frontendWsUrl =
+    displayQr && frontendWsBase
+      ? `${frontendWsBase}?pair=${displayQr.pair}`
+      : null;
 
   return (
     <>
@@ -254,15 +274,30 @@ export function PairDialog({ pairs, onPairCreated, onRefresh }: Props) {
               <div className="flex flex-col items-center gap-4">
                 <div className="rounded-xl border bg-white p-3">
                   <QRCodeSVG
-                    value={JSON.stringify(displayQr)}
+                    value={JSON.stringify(qrForScan)}
                     size={180}
                     level="M"
                   />
                 </div>
-                {wsUrl && (
-                  <p className="w-full break-all text-center font-mono text-xs text-muted-foreground">
-                    {wsUrl}
-                  </p>
+                {(wsUrl || frontendWsUrl) && (
+                  <div className="flex w-full flex-col gap-2">
+                    {wsUrl && (
+                      <p className="w-full break-all text-center font-mono text-xs text-muted-foreground">
+                        <span className="mr-1 font-sans text-[10px] text-muted-foreground/80">
+                          后端
+                        </span>
+                        {wsUrl}
+                      </p>
+                    )}
+                    {frontendWsUrl && (
+                      <p className="w-full break-all text-center font-mono text-xs text-muted-foreground">
+                        <span className="mr-1 font-sans text-[10px] text-muted-foreground/80">
+                          前端
+                        </span>
+                        {frontendWsUrl}
+                      </p>
+                    )}
+                  </div>
                 )}
                 <div className="flex w-full gap-2">
                   <Button
