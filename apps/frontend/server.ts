@@ -15,11 +15,9 @@ const backendPort = backendUrl.port
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
+const proxyTarget = `${backendUrl.protocol === "https:" ? "wss:" : "ws:"}//${backendUrl.host}`;
 const proxy = httpProxy.createProxyServer({
-  target: {
-    host: backendUrl.hostname,
-    port: backendPort,
-  },
+  target: proxyTarget,
   ws: true,
   changeOrigin: true,
 });
@@ -51,6 +49,6 @@ server.listen(port, hostname, () => {
     `[frontend] Next.js listening on http://${hostname}:${port} (${dev ? "development" : "production"})`,
   );
   console.log(
-    `[ws-proxy] /relay/ws -> ${backendUrl.hostname}:${backendPort}/relay/ws`,
+    `[ws-proxy] /relay/ws -> ${proxyTarget} (port ${backendPort})`,
   );
 });
