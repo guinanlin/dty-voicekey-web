@@ -21,9 +21,46 @@ const proxy = httpProxy.createProxyServer({
   ws: true,
   changeOrigin: true,
 });
+const backendHealthUrl = new URL("/api/v1/health", backendUrl.origin);
+const backendWaitTimeoutMs = 60_000;
+let backendReady = false;
 
-proxy.on("error", (error, _request, socket) => {
-  console.error("[ws-proxy] Proxy error:", error);
+const delay = (milliseconds: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
+
+async function waitForBackend() {
+  const deadline = Date.now() + backendWaitTimeoutMs;
+
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(backendHealthUrl, {
+        signal: AbortSignal.timeout(3_000),
+      });
+      if (response.ok) {
+        backendReady = true;
+        console.log("[ws-proxy] backend healthy, enabling /relay/ws");
+        return;
+      }
+    } catch {
+      // The backend may still be starting. Retry until the overall deadline.
+    }
+
+    await delay(500);
+  }
+
+  console.error("[ws-proxy] backend health check timed out after 60s");
+}
+
+async function waitForBackendReady() {
+  const deadline = Date.now() + backendWaitTimeoutMs;
+  while (!backendReady && Date.now() < deadline) {
+    await delay(200);
+  }
+  return backendReady;
+}
+
+proxy.on("error", (error, request, socket) => {
+  console.error(`[ws-proxy] proxy error for ${request.url ?? "unknown URL"}:`, error);
   if ("destroy" in socket) {
     socket.destroy();
   }
@@ -41,7 +78,22 @@ server.on("upgrade", (request, socket, head) => {
     return;
   }
 
-  proxy.ws(request, socket, head);
+  if (backendReady) {
+    proxy.ws(request, socket, head);
+    return;
+  }
+
+  void waitForBackendReady().then((ready) => {
+    if (ready) {
+      proxy.ws(request, socket, head);
+      return;
+    }
+
+    console.error(
+      `[ws-proxy] backend readiness timed out for ${request.url ?? "/relay/ws"}; closing socket`,
+    );
+    socket.destroy();
+  });
 });
 
 server.listen(port, hostname, () => {
@@ -51,4 +103,5 @@ server.listen(port, hostname, () => {
   console.log(
     `[ws-proxy] /relay/ws -> ${proxyTarget} (port ${backendPort})`,
   );
+  void waitForBackend();
 });

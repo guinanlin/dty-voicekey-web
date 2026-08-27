@@ -108,6 +108,12 @@ services:
         condition: service_started
       oss:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 30s
     networks:
       - dev
 
@@ -170,7 +176,8 @@ services:
     ports:
       - "${FRONTEND_PORT:-3600}:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - dev
 

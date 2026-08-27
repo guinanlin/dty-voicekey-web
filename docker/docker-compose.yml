@@ -25,6 +25,12 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 30s
   redis:
     image: redis:7-alpine
     ports:
@@ -68,6 +74,9 @@ services:
       NODE_ENV: development
       API_BASE_URL: http://backend:8000
       OPENAPI_OUTPUT_FILE: ./shared-data/openapi.json
+    depends_on:
+      backend:
+        condition: service_healthy
     volumes:
       - ../apps/frontend:/app
       - frontend-node-modules:/app/node_modules
