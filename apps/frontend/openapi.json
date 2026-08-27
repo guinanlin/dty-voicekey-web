@@ -1719,6 +1719,466 @@
           }
         }
       }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "relay-pairs"
+        ],
+        "summary": "Relay Health",
+        "operationId": "relay_health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayHealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pairs": {
+      "get": {
+        "tags": [
+          "relay-pairs"
+        ],
+        "summary": "List Pairs",
+        "operationId": "list_pairs",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayPairListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "relay-pairs"
+        ],
+        "summary": "Create Pair",
+        "operationId": "create_pair",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RelayPairCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayPairCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/pairs/{pair_id}/status": {
+      "get": {
+        "tags": [
+          "relay-pairs"
+        ],
+        "summary": "Pair Status",
+        "operationId": "pair_status",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "pair_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pair Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayPairStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pairs/{pair_id}/refresh-token": {
+      "post": {
+        "tags": [
+          "relay-pairs"
+        ],
+        "summary": "Refresh Pair Token",
+        "operationId": "refresh_pair_token",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "pair_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pair Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayPairRefreshResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pairs/{pair_id}": {
+      "delete": {
+        "tags": [
+          "relay-pairs"
+        ],
+        "summary": "Revoke Pair",
+        "operationId": "revoke_pair",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "pair_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pair Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/relay/messages": {
+      "get": {
+        "tags": [
+          "relay-messages"
+        ],
+        "summary": "List Relay Messages",
+        "operationId": "list_relay_messages",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(newest|oldest)$",
+              "default": "newest",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Time"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayMessageListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/relay/messages/stats": {
+      "get": {
+        "tags": [
+          "relay-messages"
+        ],
+        "summary": "Relay Message Stats",
+        "operationId": "relay_message_stats",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayMessageStatsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/relay/messages/{message_id}": {
+      "get": {
+        "tags": [
+          "relay-messages"
+        ],
+        "summary": "Get Relay Message",
+        "operationId": "get_relay_message",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Message Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayMessageRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "relay-messages"
+        ],
+        "summary": "Delete Relay Message",
+        "operationId": "delete_relay_message",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Message Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2051,6 +2511,417 @@
           "code"
         ],
         "title": "RegisterWithCodeRequest"
+      },
+      "RelayHealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "ws_connections": {
+            "type": "integer",
+            "title": "Ws Connections"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "ws_connections"
+        ],
+        "title": "RelayHealthResponse"
+      },
+      "RelayMessageListResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RelayMessageRead"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "page",
+          "page_size",
+          "items"
+        ],
+        "title": "RelayMessageListResponse"
+      },
+      "RelayMessageRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "pair_id": {
+            "type": "string",
+            "title": "Pair Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "after_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After Key"
+          },
+          "smart_mode": {
+            "type": "boolean",
+            "title": "Smart Mode"
+          },
+          "smart_action": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Smart Action"
+          },
+          "delivery_status": {
+            "type": "string",
+            "title": "Delivery Status"
+          },
+          "ack_ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ack Ok"
+          },
+          "ack_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ack Error"
+          },
+          "client_ip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Ip"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pair_id",
+          "text",
+          "mode",
+          "after_key",
+          "smart_mode",
+          "smart_action",
+          "delivery_status",
+          "ack_ok",
+          "ack_error",
+          "client_ip",
+          "created_at"
+        ],
+        "title": "RelayMessageRead"
+      },
+      "RelayMessageStatsResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "today": {
+            "type": "integer",
+            "title": "Today"
+          },
+          "delivered": {
+            "type": "integer",
+            "title": "Delivered"
+          },
+          "pc_offline": {
+            "type": "integer",
+            "title": "Pc Offline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "today",
+          "delivered",
+          "pc_offline"
+        ],
+        "title": "RelayMessageStatsResponse"
+      },
+      "RelayPairCreateRequest": {
+        "properties": {
+          "device_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Name"
+          }
+        },
+        "type": "object",
+        "title": "RelayPairCreateRequest"
+      },
+      "RelayPairCreateResponse": {
+        "properties": {
+          "pair_id": {
+            "type": "string",
+            "title": "Pair Id"
+          },
+          "pair_token": {
+            "type": "string",
+            "title": "Pair Token"
+          },
+          "agent_token": {
+            "type": "string",
+            "title": "Agent Token"
+          },
+          "relay_ws_url": {
+            "type": "string",
+            "title": "Relay Ws Url"
+          },
+          "relay_agent_url": {
+            "type": "string",
+            "title": "Relay Agent Url"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "qr_payload": {
+            "$ref": "#/components/schemas/RelayQrPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pair_id",
+          "pair_token",
+          "agent_token",
+          "relay_ws_url",
+          "relay_agent_url",
+          "expires_at",
+          "qr_payload"
+        ],
+        "title": "RelayPairCreateResponse"
+      },
+      "RelayPairListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RelayPairRead"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "RelayPairListResponse"
+      },
+      "RelayPairRead": {
+        "properties": {
+          "pair_id": {
+            "type": "string",
+            "title": "Pair Id"
+          },
+          "device_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Name"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "pc_online": {
+            "type": "boolean",
+            "title": "Pc Online",
+            "default": false
+          },
+          "phone_connections": {
+            "type": "integer",
+            "title": "Phone Connections",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "pair_id",
+          "device_name",
+          "expires_at",
+          "revoked_at",
+          "created_at"
+        ],
+        "title": "RelayPairRead"
+      },
+      "RelayPairRefreshResponse": {
+        "properties": {
+          "pair_token": {
+            "type": "string",
+            "title": "Pair Token"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "qr_payload": {
+            "$ref": "#/components/schemas/RelayQrPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pair_token",
+          "expires_at",
+          "qr_payload"
+        ],
+        "title": "RelayPairRefreshResponse"
+      },
+      "RelayPairStatusResponse": {
+        "properties": {
+          "pair_id": {
+            "type": "string",
+            "title": "Pair Id"
+          },
+          "pc_online": {
+            "type": "boolean",
+            "title": "Pc Online"
+          },
+          "phone_connections": {
+            "type": "integer",
+            "title": "Phone Connections"
+          },
+          "last_agent_seen_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Agent Seen At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pair_id",
+          "pc_online",
+          "phone_connections"
+        ],
+        "title": "RelayPairStatusResponse"
+      },
+      "RelayQrPayload": {
+        "properties": {
+          "v": {
+            "type": "integer",
+            "title": "V",
+            "default": 1
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "default": "relay"
+          },
+          "ws": {
+            "type": "string",
+            "title": "Ws"
+          },
+          "pair": {
+            "type": "string",
+            "title": "Pair"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ws",
+          "pair"
+        ],
+        "title": "RelayQrPayload"
       },
       "SendEmailCodeRequest": {
         "properties": {

@@ -6,7 +6,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-: "${OPENAPI_OUTPUT_FILE:=../frontend/openapi.json}"
+# This script specifically synchronizes the frontend artifact. Do not inherit the
+# backend container's shared-data output path, which is used by the dev watcher.
+OPENAPI_OUTPUT_FILE=../frontend/openapi.json
 : "${DATABASE_URL:=sqlite+aiosqlite:///:memory:}"
 : "${TEST_DATABASE_URL:=sqlite+aiosqlite:///:memory:}"
 : "${ACCESS_SECRET_KEY:=dev-access-secret}"
