@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from typing import Any
+from uuid import UUID
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 from sqlalchemy import select
@@ -28,6 +29,7 @@ router = APIRouter(tags=["relay-ws"])
 
 MAX_FRAME_BYTES = 64 * 1024
 PC_OFFLINE_ERROR = "PC 离线"
+INVALID_TARGET_ERROR = "目标配对不存在或不属于当前账号"
 
 
 def _client_ip(ws: WebSocket) -> str | None:
@@ -54,6 +56,37 @@ async def _load_pair_by_id_and_agent(
     if not verify_token(agent_token, pair.agent_token_hash):
         return None
     return pair
+
+
+async def _load_valid_target_pair(
+    db, pair_id: str, user_id: UUID
+) -> RelayPair | None:
+    result = await db.execute(
+        select(RelayPair).where(
+            RelayPair.pair_id == pair_id,
+            RelayPair.user_id == user_id,
+        )
+    )
+    pair = result.scalar_one_or_none()
+    return pair if pair is not None and _pair_is_valid(pair) else None
+
+
+def _target_pair_id(payload: dict[str, Any], default_pair_id: str) -> str:
+    for key in ("target_pair_id", "pair_id", "target"):
+        value = payload.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return default_pair_id
+
+
+def _ack_message_id(payload: dict[str, Any]) -> UUID | None:
+    value = payload.get("message_id")
+    if not isinstance(value, str):
+        return None
+    try:
+        return UUID(value)
+    except ValueError:
+        return None
 
 
 def _pair_is_valid(pair: RelayPair) -> bool:
@@ -141,17 +174,28 @@ async def phone_ws(websocket: WebSocket, pair: str = Query(...)):
                     )
                     continue
 
-                channel = await relay_manager.get_channel(pair_id)
+                target_pair_id = _target_pair_id(payload, pair_id)
+                target_pair = await _load_valid_target_pair(
+                    db, target_pair_id, user_id
+                )
+                if target_pair is None:
+                    await _send_json(
+                        websocket,
+                        {"type": "ack", "ok": False, "error": INVALID_TARGET_ERROR},
+                    )
+                    continue
+
+                channel = await relay_manager.get_channel(target_pair_id)
                 if channel is None:
                     channel = await relay_manager.get_or_create_channel(
-                        pair_id, user_id
+                        target_pair_id, user_id
                     )
 
                 if not relay_manager.is_agent_online(channel):
                     offline_message = await create_relay_message(
                         db,
                         user_id=user_id,
-                        pair_id=pair_id,
+                        pair_id=target_pair_id,
                         text=text,
                         mode=payload.get("mode"),
                         after_key=payload.get("after_key"),
@@ -167,12 +211,13 @@ async def phone_ws(websocket: WebSocket, pair: str = Query(...)):
                         websocket,
                         {"type": "ack", "ok": False, "error": PC_OFFLINE_ERROR},
                     )
+                    await relay_manager.remove_channel_if_empty(target_pair_id)
                     continue
 
                 message = await create_relay_message(
                     db,
                     user_id=user_id,
-                    pair_id=pair_id,
+                    pair_id=target_pair_id,
                     text=text,
                     mode=payload.get("mode"),
                     after_key=payload.get("after_key"),
@@ -182,10 +227,16 @@ async def phone_ws(websocket: WebSocket, pair: str = Query(...)):
                     delivery_status="pending",
                 )
                 await notify_message_created(message)
-                relay_manager.set_pending_message(channel, message.id)
+                relay_manager.set_pending_message(channel, message.id, websocket)
 
-            forwarded = await relay_manager.send_to_agent(channel, raw)
+            forwarded_payload = dict(payload)
+            forwarded_payload["message_id"] = str(message.id)
+            forwarded_payload["target_pair_id"] = target_pair_id
+            forwarded = await relay_manager.send_to_agent(
+                channel, json.dumps(forwarded_payload, ensure_ascii=False)
+            )
             if not forwarded:
+                relay_manager.discard_pending_message(channel, message.id)
                 async with async_session_maker() as db:
                     await update_relay_message_ack(
                         db,
@@ -199,6 +250,7 @@ async def phone_ws(websocket: WebSocket, pair: str = Query(...)):
                     websocket,
                     {"type": "ack", "ok": False, "error": PC_OFFLINE_ERROR},
                 )
+                await relay_manager.remove_channel_if_empty(target_pair_id)
     except WebSocketDisconnect:
         pass
     finally:
@@ -246,8 +298,11 @@ async def agent_ws(
 
             msg_type = payload.get("type")
             if msg_type == "ack":
-                pending_id = relay_manager.pop_pending_message(channel)
-                if pending_id is not None:
+                pending = relay_manager.pop_pending_message(
+                    channel, _ack_message_id(payload)
+                )
+                if pending is not None:
+                    pending_id, phone_ws = pending
                     async with async_session_maker() as db:
                         await update_relay_message_ack(
                             db,
@@ -257,7 +312,12 @@ async def agent_ws(
                             payload.get("error"),
                         )
                     await notify_message_updated_by_id(pending_id)
-                await relay_manager.broadcast_to_phones(channel, payload)
+                    try:
+                        await _send_json(phone_ws, payload)
+                    except Exception:
+                        logger.debug("failed to forward relay ack", exc_info=True)
+                else:
+                    await relay_manager.broadcast_to_phones(channel, payload)
             elif msg_type in {"connected", "pc_status"}:
                 await relay_manager.broadcast_to_phones(channel, payload)
             else:

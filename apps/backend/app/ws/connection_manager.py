@@ -18,7 +18,7 @@ class PairChannel:
     agent_ws: WebSocket | None = None
     phone_sockets: set[WebSocket] = field(default_factory=set)
     last_agent_seen_at: datetime | None = None
-    pending_message_id: UUID | None = None
+    pending_messages: dict[UUID, WebSocket] = field(default_factory=dict)
 
 
 class RelayConnectionManager:
@@ -149,13 +149,26 @@ class RelayConnectionManager:
             await self.unbind_agent(channel.pair_id)
             return False
 
-    def set_pending_message(self, channel: PairChannel, message_id: UUID) -> None:
-        channel.pending_message_id = message_id
+    def set_pending_message(
+        self, channel: PairChannel, message_id: UUID, phone_ws: WebSocket
+    ) -> None:
+        channel.pending_messages[message_id] = phone_ws
 
-    def pop_pending_message(self, channel: PairChannel) -> UUID | None:
-        message_id = channel.pending_message_id
-        channel.pending_message_id = None
-        return message_id
+    def pop_pending_message(
+        self, channel: PairChannel, message_id: UUID | None = None
+    ) -> tuple[UUID, WebSocket] | None:
+        if message_id is not None:
+            phone_ws = channel.pending_messages.pop(message_id, None)
+            return (message_id, phone_ws) if phone_ws is not None else None
+        if not channel.pending_messages:
+            return None
+        pending_id = next(iter(channel.pending_messages))
+        return pending_id, channel.pending_messages.pop(pending_id)
+
+    def discard_pending_message(
+        self, channel: PairChannel, message_id: UUID
+    ) -> None:
+        channel.pending_messages.pop(message_id, None)
 
     def get_pair_status(self, pair_id: str) -> tuple[bool, int, datetime | None]:
         channel = self._channels.get(pair_id)
