@@ -34,8 +34,9 @@ COPY --from=builder --chown=bun:bun /app/.next/standalone ./
 COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
 COPY --from=builder --chown=bun:bun /app/server.ts ./server.ts
 # The custom server calls next() at runtime, which loads config-utils.js. Next's
-# standalone tracer does not include this dynamically required webpack bundle.
-COPY --from=builder --chown=bun:bun /app/node_modules/next/dist/compiled/webpack ./node_modules/next/dist/compiled/webpack
+# standalone tracer does not include several dynamically required compiled
+# modules (webpack, @babel/runtime, ...), so copy the whole compiled tree.
+COPY --from=builder --chown=bun:bun /app/node_modules/next/dist/compiled ./node_modules/next/dist/compiled
 COPY --from=builder --chown=bun:bun /app/node_modules/http-proxy ./node_modules/http-proxy
 COPY --from=builder --chown=bun:bun /app/node_modules/eventemitter3 ./node_modules/eventemitter3
 COPY --from=builder --chown=bun:bun /app/node_modules/follow-redirects ./node_modules/follow-redirects
